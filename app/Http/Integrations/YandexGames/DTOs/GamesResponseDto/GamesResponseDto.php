@@ -130,7 +130,24 @@ final readonly class GamesResponseDto implements Arrayable
             )
         );
 
-        dd($res);
+        return new self(
+            $res->toArray(),
+            new PageInfoDto(
+                $pageInfo['nextPageId'],
+                $pageInfo['rtxReqId'],
+                $pageInfo['isFirstPage'],
+                $pageInfo['hasNextPage'],
+            ),
+            $gamesWithPromos,
+            $shareImage,
+            collect($siteNavigationLinks)->map(
+                static fn(array $link) => new NavigationLinkDto(
+                    $link['name'],
+                    $link['url'],
+                )
+            )->toArray(),
+            $gamesRequestId,
+        );
     }
 
     public function toArray()
