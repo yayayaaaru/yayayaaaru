@@ -6,6 +6,7 @@ namespace App\Http\Integrations\YandexGames\Enums;
 
 use App\Http\Integrations\YandexGames\Contracts\FeedStrategy;
 use App\Http\Integrations\YandexGames\FeedAdvStrategy;
+use App\Http\Integrations\YandexGames\FeedFoundStrategy;
 use App\Http\Integrations\YandexGames\FeedGridLayoutStrategy;
 
 enum FeedType: string
@@ -19,6 +20,8 @@ enum FeedType: string
         return match($this) {
             self::ADV => new FeedAdvStrategy,
             self::GRID_LAYOUT => new FeedGridLayoutStrategy,
+            self::FOUND => new FeedFoundStrategy,
+            default => throw new \InvalidArgumentException('Unknown feed type.'),
         };
     }
 
