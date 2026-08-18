@@ -15,9 +15,9 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
-#[Signature('games:yandex:grabber')]
+#[Signature('developers:yandex:grabber')]
 #[Description('Command description')]
-class GamesYandexGrabberCommend extends Command
+class DevelopersYandexGrabberCommend extends Command
 {
     /**
      * Execute the console command.
