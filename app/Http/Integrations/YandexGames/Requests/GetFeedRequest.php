@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Integrations\YandexGames\Requests;
 
-use App\Http\Integrations\YandexGames\DTOs\GamesResponseDto\GamesResponseDto;
+use App\Http\Integrations\YandexGames\DTOs\GamesResponseDto;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
