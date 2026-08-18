@@ -13,16 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sources', function (Blueprint $table) {
+        Schema::create('tags', function (Blueprint $table) {
             $table->id();
-            $table->morphs('sourceable', 'idx_sources_on_sourceable');
-            $table->string('name');
-            $table->string('external_id');
+            $table->string('slug')->unique('unq_tags_on_slug');
+            $table->string('title');
             $table->timestamps();
-        });
-
-        Schema::table('sources', function (Blueprint $table) {
-            $table->index(['name', 'external_id'], 'idx_sources_on_name_and_external_id');
         });
     }
 
@@ -31,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sources');
+        Schema::dropIfExists('tags');
     }
 };

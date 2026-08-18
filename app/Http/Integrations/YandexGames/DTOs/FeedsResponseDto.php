@@ -10,7 +10,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
 use Saloon\Http\Response;
 
-final readonly class GamesResponseDto implements Arrayable
+final readonly class FeedsResponseDto implements Arrayable
 {
     /**
      * @param FeedGridLayoutDto[] $feed
