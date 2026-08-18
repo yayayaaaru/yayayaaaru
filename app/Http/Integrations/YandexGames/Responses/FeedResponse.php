@@ -2,18 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Integrations\YandexGames\DTOs;
+namespace App\Http\Integrations\YandexGames\Responses;
 
-use App\Http\Integrations\YandexGames\DTOs\FeedDto\FeedGridLayoutDto;
+use App\Http\Integrations\YandexGames\Contracts\FeedDto;
+use App\Http\Integrations\YandexGames\DTOs\NavigationLinkDto;
+use App\Http\Integrations\YandexGames\DTOs\PageInfoDto;
 use App\Http\Integrations\YandexGames\Enums\FeedType;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
 use Saloon\Http\Response;
 
-final readonly class FeedsResponseDto implements Arrayable
+final readonly class FeedResponse implements Arrayable
 {
     /**
-     * @param FeedGridLayoutDto[] $feed
+     * @param FeedDto[] $feed
      * @param NavigationLinkDto[] $siteNavigationLinks
      */
     public function __construct(

@@ -12,6 +12,7 @@ enum FeedType: string
 {
     case ADV = 'adv';
     case GRID_LAYOUT = 'grid_layout';
+    case FOUND = 'found';
 
     public function getStrategy(): FeedStrategy
     {

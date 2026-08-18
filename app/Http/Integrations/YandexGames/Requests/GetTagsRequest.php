@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Integrations\YandexGames\Requests;
 
-use App\Http\Integrations\YandexGames\DTOs\TagsResponseDto;
+use App\Http\Integrations\YandexGames\Responses\TagsResponse;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
@@ -25,8 +25,8 @@ class GetTagsRequest extends Request
         return '/tags';
     }
 
-    public function createDtoFromResponse(Response $response): TagsResponseDto
+    public function createDtoFromResponse(Response $response): TagsResponse
     {
-        return TagsResponseDto::fromSaloonResponse($response);
+        return TagsResponse::fromSaloonResponse($response);
     }
 }

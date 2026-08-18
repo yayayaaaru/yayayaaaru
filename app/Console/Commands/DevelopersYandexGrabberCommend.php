@@ -7,9 +7,9 @@ namespace App\Console\Commands;
 use App\DTOs\SourceDto;
 use App\Enums\SourceName;
 use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\WidgetDto;
-use App\Http\Integrations\YandexGames\DTOs\FeedsResponseDto;
 use App\Http\Integrations\YandexGames\Enums\FeedType;
 use App\Http\Integrations\YandexGames\Requests\GetFeedRequest;
+use App\Http\Integrations\YandexGames\Responses\FeedResponse;
 use App\Http\Integrations\YandexGames\YandexGamesConnector;
 use App\Models\Developer;
 use Illuminate\Console\Attributes\Description;
@@ -36,7 +36,7 @@ class DevelopersYandexGrabberCommend extends Command
                 throw new \HttpRuntimeException();
             }
 
-            /** @var FeedsResponseDto $payload */
+            /** @var FeedResponse $payload */
             $payload = $res->dto();
 
             $feed = $payload->feed;
@@ -44,7 +44,7 @@ class DevelopersYandexGrabberCommend extends Command
 
             foreach ($feed as $feedDto) {
 
-                if ($feedDto->type === FeedType::ADV) {
+                if ($feedDto->type !== FeedType::GRID_LAYOUT) {
                     continue;
                 }
 

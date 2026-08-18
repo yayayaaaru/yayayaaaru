@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Integrations\YandexGames\Requests;
 
-use App\Http\Integrations\YandexGames\DTOs\FeedsResponseDto;
+use App\Http\Integrations\YandexGames\Responses\FeedResponse;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
@@ -26,8 +26,8 @@ class GetFeedRequest extends Request
         return '/feed';
     }
 
-    public function createDtoFromResponse(Response $response): FeedsResponseDto
+    public function createDtoFromResponse(Response $response): FeedResponse
     {
-        return FeedsResponseDto::fromSaloonResponse($response);
+        return FeedResponse::fromSaloonResponse($response);
     }
 }
