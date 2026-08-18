@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Integrations\YandexGames\Requests;
 
-use App\Http\Integrations\YandexGames\DTOs\FeedsResponseDto;
+use App\Http\Integrations\YandexGames\DTOs\TagsResponseDto;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 
-class GetFeedRequest extends Request
+class GetTagsRequest extends Request
 {
     protected Method $method = Method::GET;
 
@@ -17,17 +17,16 @@ class GetFeedRequest extends Request
     {
         return [
             'lang' => 'ru',
-            'tab' => 'new',
         ];
     }
 
     public function resolveEndpoint(): string
     {
-        return '/feed';
+        return '/tags';
     }
 
-    public function createDtoFromResponse(Response $response): FeedsResponseDto
+    public function createDtoFromResponse(Response $response): TagsResponseDto
     {
-        return FeedsResponseDto::fromSaloonResponse($response);
+        return TagsResponseDto::fromSaloonResponse($response);
     }
 }

@@ -6,7 +6,8 @@ namespace App\Console\Commands;
 
 use App\DTOs\SourceDto;
 use App\Enums\SourceName;
-use App\Http\Integrations\YandexGames\DTOs\GamesResponseDto;
+use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\WidgetDto;
+use App\Http\Integrations\YandexGames\DTOs\FeedsResponseDto;
 use App\Http\Integrations\YandexGames\Enums\FeedType;
 use App\Http\Integrations\YandexGames\Requests\GetFeedRequest;
 use App\Http\Integrations\YandexGames\YandexGamesConnector;
@@ -35,7 +36,7 @@ class DevelopersYandexGrabberCommend extends Command
                 throw new \HttpRuntimeException();
             }
 
-            /** @var GamesResponseDto $payload */
+            /** @var FeedsResponseDto $payload */
             $payload = $res->dto();
 
             $feed = $payload->feed;
@@ -50,39 +51,36 @@ class DevelopersYandexGrabberCommend extends Command
                 $widgets = $feedDto->widgets;
 
                 $this->withProgressBar(
-                    count($widgets),
-                    function () use ($widgets) {
+                    $widgets,
+                    function (WidgetDto $widgetDto) {
 
-                        foreach ($widgets as $widgetDto) {
-
-                            if ($widgetDto->type !== 'game') {
-                                continue;
-                            }
-
-                            $gameDto = $widgetDto->data;
-
-                            $targetSource = new SourceDto(
-                                SourceName::YANDEXGAMES->value,
-                                (string)$gameDto->developer->id,
-                            );
-
-                            Developer::query()
-                                ->whereHasSources([$targetSource])
-                                ->firstOr(function () use ($targetSource, $gameDto) {
-
-                                    $newDeveloper = Developer::create([
-                                        'slug' => uniqid(),
-                                        'name' => $gameDto->developer->name,
-                                    ]);
-
-                                    $newDeveloper->sources()->create([
-                                        'name' => $targetSource->name,
-                                        'external_id' => $targetSource->external_id,
-                                    ]);
-
-                                    return $newDeveloper;
-                                });
+                        if ($widgetDto->type !== 'game') {
+                            return;
                         }
+
+                        $gameDto = $widgetDto->data;
+
+                        $targetSource = new SourceDto(
+                            SourceName::YANDEXGAMES->value,
+                            (string)$gameDto->developer->id,
+                        );
+
+                        Developer::query()
+                            ->whereHasSources([$targetSource])
+                            ->firstOr(function () use ($gameDto, $targetSource) {
+
+                                $newDeveloper = Developer::create([
+                                    'slug' => uniqid(),
+                                    'name' => $gameDto->developer->name,
+                                ]);
+
+                                $newDeveloper->sources()->create([
+                                    'name' => $targetSource->name,
+                                    'external_id' => $targetSource->external_id,
+                                ]);
+
+                                return $newDeveloper;
+                            });
                     }
                 );
 

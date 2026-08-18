@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Developer;
 use App\Models\Game;
+use App\Models\Tag;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
         Relation::morphMap([
             'developer' => Developer::class,
             'game' => Game::class,
+            'tag' => Tag::class,
         ]);
     }
 }
