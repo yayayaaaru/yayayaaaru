@@ -96,9 +96,7 @@ class GamesYandexGrabberCommend extends Command
                                         $newGame = $developer->games()->create([
                                             'slug' => uniqid(),
                                             'title' => $itemDto->title,
-                                            'description' => 'test',
-                                            'released_at' => now(),
-                                            'rating' => $itemDto->features->ageRating->value,
+                                            'age_rating' => $itemDto->features->ageRating->value,
                                         ]);
 
                                         $newGame->sources()->create([

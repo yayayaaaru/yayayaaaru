@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum GameRating: string
+enum GameAgeRating: string
 {
     case R0 = '0+';
     case R6 = '6+';
