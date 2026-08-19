@@ -6,6 +6,7 @@ namespace App\Http\Integrations\YandexGames;
 
 use App\Http\Integrations\YandexGames\Contracts\FeedStrategy;
 use App\Http\Integrations\YandexGames\DTOs\FeedDto\FeedGamesByDeveloperDto;
+use App\Http\Integrations\YandexGames\DTOs\FeedDto\ItemDto\CategoryDto;
 use App\Http\Integrations\YandexGames\DTOs\FeedDto\ItemDto\DeveloperDto as ItemDeveloperDto;
 use App\Http\Integrations\YandexGames\DTOs\FeedDto\ItemDto\ItemDto;
 use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\FeaturesDto;
@@ -47,6 +48,11 @@ final readonly class FeedFoundStrategy implements FeedStrategy
                     $item['row'],
                 ),
                 $item['requestId'],
+                array_map(
+                    static fn(int $id, string $title): CategoryDto => new CategoryDto($id, $title),
+                    $item['categoryIDs'],
+                    $item['categoryNames']
+                ),
             ))->toArray(),
             $context['isFromFirstPage'],
             $context['requestId'],

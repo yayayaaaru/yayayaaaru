@@ -11,6 +11,7 @@ use App\Http\Integrations\YandexGames\Enums\FeedType;
 use App\Http\Integrations\YandexGames\Requests\GetGamesByDeveloperRequest;
 use App\Http\Integrations\YandexGames\Responses\GamesByDeveloperResponse;
 use App\Http\Integrations\YandexGames\YandexGamesConnector;
+use App\Models\Category;
 use App\Models\Developer;
 use App\Models\Game;
 use App\Models\Source;
@@ -107,6 +108,30 @@ class GamesYandexGrabberCommend extends Command
 
                                         return $newGame;
                                     });
+
+                                /** @var Category $category */
+                                foreach ($itemDto->categories as $categoryDto) {
+
+                                    $targetSource = new SourceDto(
+                                        SourceName::YANDEXGAMES->value,
+                                        (string) $categoryDto->id,
+                                    );
+
+                                    Category::query()
+                                        ->whereHasSources([$targetSource])
+                                        ->firstOr(function () use ($categoryDto, $targetSource) {
+
+                                            $newCategory = Category::create([
+                                                'slug' => uniqid(),
+                                                'title' => $categoryDto->title,
+                                            ]);
+
+                                            $newCategory->sources()->create([
+                                                'name' => $targetSource->name,
+                                                'external_id' => $targetSource->external_id,
+                                            ]);
+                                        });
+                                }
                             }
                         );
 

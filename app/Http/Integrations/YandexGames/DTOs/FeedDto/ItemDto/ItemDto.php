@@ -11,6 +11,9 @@ use App\Http\Integrations\YandexGames\Values\AppId;
 
 final readonly class ItemDto
 {
+    /**
+     * @param CategoryDto[] $categories
+     */
     public function __construct(
         public DeveloperDto $developer,
         public array $categoryIds,
@@ -23,6 +26,7 @@ final readonly class ItemDto
         public string $type,
         public GridPositionDto $position,
         public string $requestId,
+        public array $categories,
     )
     {
     }

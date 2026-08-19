@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Category;
 use App\Models\Developer;
 use App\Models\Game;
 use App\Models\Tag;
@@ -27,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
             'developer' => Developer::class,
             'game' => Game::class,
             'tag' => Tag::class,
+            'category' => Category::class,
         ]);
     }
 }
