@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Integrations\YandexGames\Values;
 
-use App\Enums\GameRating;
+use App\Enums\GameAgeRating;
 
 final readonly class AgeRating
 {
@@ -12,7 +12,7 @@ final readonly class AgeRating
         public string $value,
     )
     {
-        if (GameRating::tryFrom($value) === null) {
+        if (GameAgeRating::tryFrom($value) === null) {
             throw new \InvalidArgumentException('Invalid age rating.');
         }
     }

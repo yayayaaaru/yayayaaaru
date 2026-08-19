@@ -25,7 +25,16 @@ class Game extends Model
         'developer_id',
         'released_at',
         'rating',
+        'age_rating',
+        'cis_rating',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'rating' => 'decimal:1',
+        ];
+    }
 
     // @mago-ignore lint:no-redundant-method-override
     public static function query(): GameBuilder
