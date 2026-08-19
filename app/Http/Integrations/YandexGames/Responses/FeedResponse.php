@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Integrations\YandexGames\Responses;
 
-use App\Http\Integrations\YandexGames\Contracts\FeedDto;
+use App\Http\Integrations\YandexGames\DTOs\FeedDto\FeedAdvDto;
+use App\Http\Integrations\YandexGames\DTOs\FeedDto\FeedGridLayoutDto;
 use App\Http\Integrations\YandexGames\DTOs\NavigationLinkDto;
 use App\Http\Integrations\YandexGames\DTOs\PageInfoDto;
 use App\Http\Integrations\YandexGames\Enums\FeedType;
@@ -15,7 +16,7 @@ use Saloon\Http\Response;
 final readonly class FeedResponse implements Arrayable
 {
     /**
-     * @param FeedDto[] $feed
+     * @param (FeedGridLayoutDto|FeedAdvDto)[] $feed
      * @param NavigationLinkDto[] $siteNavigationLinks
      */
     public function __construct(

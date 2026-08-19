@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Integrations\YandexGames\Responses;
 
 use App\Http\Integrations\YandexGames\DTOs\FeedDto\DeveloperDto as FeedDeveloperDto;
+use App\Http\Integrations\YandexGames\DTOs\FeedDto\FeedAdvDto;
 use App\Http\Integrations\YandexGames\DTOs\FeedDto\FeedGamesByDeveloperDto;
 use App\Http\Integrations\YandexGames\DTOs\PageInfoDto;
 use App\Http\Integrations\YandexGames\Enums\FeedType;
@@ -16,7 +17,7 @@ use Saloon\Http\Response;
 final readonly class GamesByDeveloperResponse implements Arrayable
 {
     /**
-     * @param FeedGamesByDeveloperDto[] $feed
+     * @param (FeedGamesByDeveloperDto|FeedAdvDto)[] $feed
      */
     public function __construct(
         public array $feed,
