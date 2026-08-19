@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\GameMediaDto;
+namespace App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\MediaDto;
 
 use App\Http\Integrations\YandexGames\Values\Url;
 use App\Http\Integrations\YandexGames\Values\VideoDimensions;

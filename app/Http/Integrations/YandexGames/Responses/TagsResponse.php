@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Integrations\YandexGames\DTOs;
+namespace App\Http\Integrations\YandexGames\Responses;
 
 use App\Http\Integrations\YandexGames\DTOs\TagDto\InfoDto;
 use App\Http\Integrations\YandexGames\DTOs\TagDto\StatDto;
@@ -10,7 +10,7 @@ use App\Http\Integrations\YandexGames\DTOs\TagDto\TagDto;
 use Illuminate\Contracts\Support\Arrayable;
 use Saloon\Http\Response;
 
-final readonly class TagsResponseDto implements Arrayable
+final readonly class TagsResponse implements Arrayable
 {
     public function __construct(
         public array $tags,

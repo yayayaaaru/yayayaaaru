@@ -10,10 +10,10 @@ use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\ConfigDto;
 use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\BadgeDto;
 use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\DeveloperDto;
 use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\GameDto;
-use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\GameFeaturesDto;
-use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\GameMediaDto\GameMediaDto;
-use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\GameMediaDto\ImageDto;
-use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\GameMediaDto\VideoDto;
+use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\FeaturesDto;
+use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\MediaDto\MediaDto;
+use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\MediaDto\ImageDto;
+use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\MediaDto\VideoDto;
 use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\GridPositionDto;
 use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\RatingDto;
 use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\WidgetDto;
@@ -49,7 +49,7 @@ final readonly class FeedGridLayoutStrategy implements FeedStrategy
                             $widget['data']['ratingCount'],
                             $widget['data']['rating'],
                         ),
-                        new GameMediaDto(
+                        new MediaDto(
                             new ImageDto(
                                 $widget['data']['media']['cover']['prefix-url'],
                                 $widget['data']['media']['cover']['mainColor'],
@@ -73,7 +73,7 @@ final readonly class FeedGridLayoutStrategy implements FeedStrategy
                             )->toArray(),
                         ),
                         $widget['data']['tagIDs'],
-                        new GameFeaturesDto(
+                        new FeaturesDto(
                             new AgeRating($widget['data']['features']['age_rating']),
                             $widget['data']['features']['user_data_required'],
                         ),

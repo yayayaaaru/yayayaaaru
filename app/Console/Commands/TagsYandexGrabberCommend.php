@@ -7,8 +7,8 @@ namespace App\Console\Commands;
 use App\DTOs\SourceDto;
 use App\Enums\SourceName;
 use App\Http\Integrations\YandexGames\DTOs\TagDto\TagDto;
-use App\Http\Integrations\YandexGames\DTOs\TagsResponseDto;
 use App\Http\Integrations\YandexGames\Requests\GetTagsRequest;
+use App\Http\Integrations\YandexGames\Responses\TagsResponse;
 use App\Http\Integrations\YandexGames\YandexGamesConnector;
 use App\Models\Tag;
 use Illuminate\Console\Attributes\Description;
@@ -33,7 +33,7 @@ class TagsYandexGrabberCommend extends Command
             throw new \HttpRuntimeException();
         }
 
-        /** @var TagsResponseDto $payload */
+        /** @var TagsResponse $payload */
         $payload = $res->dto();
 
         $this->withProgressBar(

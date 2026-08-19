@@ -6,7 +6,7 @@ namespace App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto;
 
 use App\Http\Integrations\YandexGames\Values\AgeRating;
 
-final readonly class GameFeaturesDto
+final readonly class FeaturesDto
 {
     public function __construct(
         public AgeRating $ageRating,
