@@ -23,17 +23,14 @@ class DevelopersYandexGrabberCommend extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(YandexGamesConnector $connector): int
     {
-        /** @var YandexGamesConnector $connector */
-        $connector = app(YandexGamesConnector::class);
-
         do
         {
             $res = $connector->send(new GetFeedRequest);
 
             if (! $res->ok()) {
-                throw new \HttpRuntimeException();
+                break;
             }
 
             /** @var FeedResponse $payload */
@@ -84,11 +81,11 @@ class DevelopersYandexGrabberCommend extends Command
                     }
                 );
 
-                $connector->query()->add('page_id', $pageInfoDto->nextPageId);
-                $connector->query()->add('rtx-reqid', $pageInfoDto->requestId);
-
                 $this->info(' success');
             }
+
+            $connector->query()->add('page_id', $pageInfoDto->nextPageId);
+            $connector->query()->add('rtx-reqid', $pageInfoDto->requestId);
         }
         while ($pageInfoDto->hasNextPage);
 

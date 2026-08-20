@@ -54,14 +54,22 @@ class GamesYandexGrabberCommend extends Command
 
                         do
                         {
+                            $externalId = (int)$source->external_id;
+
                             $res = $connector->send(
-                                new GetGamesByDeveloperRequest(
-                                    (int)$source->external_id
-                                )
+                                new GetGamesByDeveloperRequest($externalId)
                             );
 
                             if (! $res->ok()) {
-                                throw new \HttpRuntimeException();
+                                $format = '0/0 developer EID: %d, status code: %d';
+
+                                $this->error(sprintf(
+                                    $format,
+                                    $externalId,
+                                    $res->status(),
+                                ));
+
+                                break;
                             }
 
                             /** @var GamesByDeveloperResponse $payload */
@@ -133,11 +141,11 @@ class GamesYandexGrabberCommend extends Command
                                     }
                                 );
 
-                                $connector->query()->add('page_id', $pageInfoDto->nextPageId);
-                                $connector->query()->add('rtx-reqid', $pageInfoDto->requestId);
-
                                 $this->info(' success');
                             }
+
+                            $connector->query()->add('page_id', $pageInfoDto->nextPageId);
+                            $connector->query()->add('rtx-reqid', $pageInfoDto->requestId);
                         }
                         while ($pageInfoDto->hasNextPage);
                     }
