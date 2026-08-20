@@ -24,123 +24,126 @@ use Illuminate\Support\Collection;
 #[Description('Command description')]
 class GamesYandexGrabberCommend extends Command
 {
+    private const int CHUNK_SIZE = 24;
+
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(YandexGamesConnector $connector): int
     {
-        /** @var YandexGamesConnector $connector */
-        $connector = app(YandexGamesConnector::class);
-
         $connector->query()->add('games_count', 24);
 
-        $q = Developer::query();
+        Developer::query()
+            ->with('sources')
+            ->orderByDesc('created_at')
+            ->orderBy('id')
+            ->chunk(
+                self::CHUNK_SIZE,
+                function (Collection $developers) use ($connector) {
 
-        $q->with('sources');
-        $q->orderByDesc('created_at');
+                    /** @var Developer $developer */
+                    foreach ($developers as $developer) {
 
-        $q->chunk(24, function (Collection $developers) use ($connector) {
+                        $source = $developer->sources->first(
+                            static fn(Source $source) => $source->name === SourceName::YANDEXGAMES
+                        );
 
-            /** @var Developer $developer */
-            foreach ($developers as $developer) {
-
-                $source = $developer->sources->first(
-                    static fn(Source $source) => $source->name === SourceName::YANDEXGAMES
-                );
-
-                if (is_null($source)) {
-                    continue;
-                }
-
-                do
-                {
-                    $res = $connector->send(
-                        new GetGamesByDeveloperRequest(
-                            (int)$source->external_id
-                        )
-                    );
-
-                    if (! $res->ok()) {
-                        throw new \HttpRuntimeException();
-                    }
-
-                    /** @var GamesByDeveloperResponse $payload */
-                    $payload = $res->dto();
-
-                    $feed = $payload->feed;
-                    $pageInfoDto = $payload->pageInfo;
-
-                    foreach ($feed as $feedDto) {
-
-                        if ($feedDto->type !== FeedType::FOUND) {
+                        if (is_null($source)) {
                             continue;
                         }
 
-                        $this->withProgressBar(
-                            $feedDto->items,
-                            function (ItemDto $itemDto) use ($developer) {
+                        do
+                        {
+                            $res = $connector->send(
+                                new GetGamesByDeveloperRequest(
+                                    (int)$source->external_id
+                                )
+                            );
 
-                                if ($itemDto->type !== 'game') {
-                                    return;
+                            if (! $res->ok()) {
+                                throw new \HttpRuntimeException();
+                            }
+
+                            /** @var GamesByDeveloperResponse $payload */
+                            $payload = $res->dto();
+
+                            $feed = $payload->feed;
+                            $pageInfoDto = $payload->pageInfo;
+
+                            foreach ($feed as $feedDto) {
+
+                                if ($feedDto->type !== FeedType::FOUND) {
+                                    continue;
                                 }
 
-                                $targetSource = new SourceDto(
-                                    SourceName::YANDEXGAMES->value,
-                                    (string) $itemDto->appId->value,
+                                $this->withProgressBar(
+                                    $feedDto->items,
+                                    function (ItemDto $itemDto) use ($developer) {
+
+                                        if ($itemDto->type !== 'game') {
+                                            return;
+                                        }
+
+                                        $targetSource = new SourceDto(
+                                            SourceName::YANDEXGAMES->value,
+                                            (string) $itemDto->appId->value,
+                                        );
+
+                                        Game::query()
+                                            ->whereHasSources([$targetSource])
+                                            ->firstOr(function () use ($itemDto, $targetSource, $developer) {
+
+                                                $newGame = $developer->games()->create([
+                                                    'slug' => uniqid(),
+                                                    'title' => $itemDto->title,
+                                                    'age_rating' => $itemDto->features->ageRating->value,
+                                                ]);
+
+                                                $newGame->sources()->create([
+                                                    'name' => $targetSource->name,
+                                                    'external_id' => $targetSource->external_id,
+                                                ]);
+
+                                                return $newGame;
+                                            });
+
+                                        /** @var Category $category */
+                                        foreach ($itemDto->categories as $categoryDto) {
+
+                                            $targetSource = new SourceDto(
+                                                SourceName::YANDEXGAMES->value,
+                                                (string) $categoryDto->id,
+                                            );
+
+                                            Category::query()
+                                                ->whereHasSources([$targetSource])
+                                                ->firstOr(function () use ($categoryDto, $targetSource) {
+
+                                                    $newCategory = Category::create([
+                                                        'slug' => uniqid(),
+                                                        'title' => $categoryDto->title,
+                                                    ]);
+
+                                                    $newCategory->sources()->create([
+                                                        'name' => $targetSource->name,
+                                                        'external_id' => $targetSource->external_id,
+                                                    ]);
+                                                });
+                                        }
+                                    }
                                 );
 
-                                Game::query()
-                                    ->whereHasSources([$targetSource])
-                                    ->firstOr(function () use ($itemDto, $targetSource, $developer) {
+                                $connector->query()->add('page_id', $pageInfoDto->nextPageId);
+                                $connector->query()->add('rtx-reqid', $pageInfoDto->requestId);
 
-                                        $newGame = $developer->games()->create([
-                                            'slug' => uniqid(),
-                                            'title' => $itemDto->title,
-                                            'age_rating' => $itemDto->features->ageRating->value,
-                                        ]);
-
-                                        $newGame->sources()->create([
-                                            'name' => $targetSource->name,
-                                            'external_id' => $targetSource->external_id,
-                                        ]);
-
-                                        return $newGame;
-                                    });
-
-                                /** @var Category $category */
-                                foreach ($itemDto->categories as $categoryDto) {
-
-                                    $targetSource = new SourceDto(
-                                        SourceName::YANDEXGAMES->value,
-                                        (string) $categoryDto->id,
-                                    );
-
-                                    Category::query()
-                                        ->whereHasSources([$targetSource])
-                                        ->firstOr(function () use ($categoryDto, $targetSource) {
-
-                                            $newCategory = Category::create([
-                                                'slug' => uniqid(),
-                                                'title' => $categoryDto->title,
-                                            ]);
-
-                                            $newCategory->sources()->create([
-                                                'name' => $targetSource->name,
-                                                'external_id' => $targetSource->external_id,
-                                            ]);
-                                        });
-                                }
+                                $this->info(' success');
                             }
-                        );
-
-                        $connector->query()->add('page_id', $pageInfoDto->nextPageId);
-                        $connector->query()->add('rtx-reqid', $pageInfoDto->requestId);
-
-                        $this->info(' success');
+                        }
+                        while ($pageInfoDto->hasNextPage);
                     }
                 }
-                while ($pageInfoDto->hasNextPage);
-            }
-        });
+        );
+
+        return self::SUCCESS;
     }
 }

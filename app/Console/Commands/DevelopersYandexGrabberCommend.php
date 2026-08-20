@@ -23,7 +23,7 @@ class DevelopersYandexGrabberCommend extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         /** @var YandexGamesConnector $connector */
         $connector = app(YandexGamesConnector::class);
@@ -91,5 +91,7 @@ class DevelopersYandexGrabberCommend extends Command
             }
         }
         while ($pageInfoDto->hasNextPage);
+
+        return self::SUCCESS;
     }
 }

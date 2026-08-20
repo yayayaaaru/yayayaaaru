@@ -48,8 +48,8 @@ class TagsYandexGamesSyncCommend extends Command
 
                     $res = $connector->send(new GetGamesByIdsRequest($ids));
 
-                    if (!$res->ok()) {
-                        return;
+                    if (! $res->ok()) {
+                        throw new \HttpRuntimeException();
                     }
 
                     /** @var GamesByIdsResponse $payload */
