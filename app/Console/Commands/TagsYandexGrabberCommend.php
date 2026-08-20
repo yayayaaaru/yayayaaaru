@@ -22,15 +22,12 @@ class TagsYandexGrabberCommend extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(YandexGamesConnector $connector): int
     {
-        /** @var YandexGamesConnector $connector */
-        $connector = app(YandexGamesConnector::class);
-
         $res = $connector->send(new GetTagsRequest);
 
         if (! $res->ok()) {
-            throw new \HttpRuntimeException();
+            return self::FAILURE;
         }
 
         /** @var TagsResponse $payload */
@@ -48,6 +45,7 @@ class TagsYandexGrabberCommend extends Command
                 Tag::query()
                     ->whereHasSources([$targetSource])
                     ->firstOr(function () use ($tagDto, $targetSource) {
+
                         $newTag = Tag::create([
                             'slug' => uniqid(),
                             'title' => $tagDto->title,
@@ -64,5 +62,7 @@ class TagsYandexGrabberCommend extends Command
         );
 
         $this->info(' success');
+
+        return self::SUCCESS;
     }
 }
