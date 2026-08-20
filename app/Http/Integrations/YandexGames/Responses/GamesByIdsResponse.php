@@ -11,6 +11,7 @@ use App\Http\Integrations\YandexGames\DTOs\GameDto\GameDto;
 use App\Http\Integrations\YandexGames\Values\AppId;
 use App\Http\Integrations\YandexGames\Values\Url;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Saloon\Http\Response;
 
@@ -56,7 +57,7 @@ final readonly class GamesByIdsResponse implements Arrayable
                     $game['tagIDs'],
                     $game['score'],
                     $game['minLoadTime'] ?? 0,
-                    $game['firstPublished'],
+                    Carbon::parse($game['firstPublished']),
                     $game['extraFeatures'], // @todo
                     $game['badge'],
                     array_map(

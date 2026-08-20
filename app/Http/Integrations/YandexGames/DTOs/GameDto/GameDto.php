@@ -8,6 +8,7 @@ use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\DeveloperDt
 use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\RatingDto;
 use App\Http\Integrations\YandexGames\Values\AppId;
 use App\Http\Integrations\YandexGames\Values\Url;
+use Illuminate\Support\Carbon;
 
 final readonly class GameDto
 {
@@ -31,7 +32,7 @@ final readonly class GameDto
         public array $tagIds,
         public array|null $score,
         public float $minLoadTime,
-        public int $firstPublished,
+        public Carbon $firstPublished,
         public array $extraFeatures,
         public array $badge,
         public array $categories,

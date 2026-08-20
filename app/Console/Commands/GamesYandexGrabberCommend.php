@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use App\DTOs\SourceDto;
 use App\Enums\SourceName;
+use App\Http\Integrations\YandexGames\DTOs\FeedDto\ItemDto\CategoryDto;
 use App\Http\Integrations\YandexGames\DTOs\FeedDto\ItemDto\ItemDto;
 use App\Http\Integrations\YandexGames\Enums\FeedType;
 use App\Http\Integrations\YandexGames\Requests\GetGamesByDeveloperRequest;
@@ -61,7 +62,7 @@ class GamesYandexGrabberCommend extends Command
                             );
 
                             if (! $res->ok()) {
-                                $format = '0/0 developer EID: %d, status code: %d';
+                                $format = ' 0/0 | developer EID: %d | status CODE: %d';
 
                                 $this->error(sprintf(
                                     $format,
@@ -115,12 +116,12 @@ class GamesYandexGrabberCommend extends Command
                                                 return $newGame;
                                             });
 
-                                        /** @var Category $category */
+                                        /** @var CategoryDto $categoryDto */
                                         foreach ($itemDto->categories as $categoryDto) {
 
                                             $targetSource = new SourceDto(
                                                 SourceName::YANDEXGAMES->value,
-                                                (string) $categoryDto->id,
+                                                (string)$categoryDto->id,
                                             );
 
                                             Category::query()

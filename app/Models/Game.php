@@ -33,6 +33,7 @@ class Game extends Model
     {
         return [
             'rating' => 'decimal:1',
+            'released_at' => 'datetime',
         ];
     }
 

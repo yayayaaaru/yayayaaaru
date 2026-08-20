@@ -18,9 +18,9 @@ use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 
-#[Signature('tags:yandex:games:sync')] // @todo
+#[Signature('games:yandex:sync')] // @todo
 #[Description('Command description')]
-class TagsYandexGamesSyncCommend extends Command
+class GamesYandexSyncCommend extends Command
 {
     private const int CHUNK_SIZE = 24;
 
@@ -80,6 +80,11 @@ class TagsYandexGamesSyncCommend extends Command
 
                             $game->tags()->sync($gameTags);
                             $game->categories()->sync($gameCategories);
+
+                            $released_at = $gameDto->firstPublished;
+                            if (is_null($game->released_at)) {
+                                $game->update(['released_at' => $released_at]);
+                            }
                         }
                     );
 
