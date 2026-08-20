@@ -10,6 +10,7 @@ use App\Http\Integrations\YandexGames\DTOs\GameDto\GameDto;
 use App\Http\Integrations\YandexGames\Requests\GetGamesByIdsRequest;
 use App\Http\Integrations\YandexGames\Responses\GamesByIdsResponse;
 use App\Http\Integrations\YandexGames\YandexGamesConnector;
+use App\Models\Category;
 use App\Models\Game;
 use App\Models\Tag;
 use Illuminate\Console\Attributes\Description;
@@ -17,7 +18,7 @@ use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 
-#[Signature('tags:yandex:games:sync')]
+#[Signature('tags:yandex:games:sync')] // @todo
 #[Description('Command description')]
 class TagsYandexGamesSyncCommend extends Command
 {
@@ -55,27 +56,12 @@ class TagsYandexGamesSyncCommend extends Command
                     /** @var GamesByIdsResponse $payload */
                     $payload = $res->dto();
 
-                    /** @var Collection<int> $allTagIds */
-                    $allTagIds = collect($payload->games)
-                        ->flatMap(static fn(GameDto $dto) => $dto->tagIds)
-                        ->unique()
-                        ->values();
-
-                    $tags = Tag::query()
-                        ->with('sources')
-                        ->whereHasSources(
-                            $allTagIds->map(
-                                static fn(int $tagId) => new SourceDto(
-                                    SourceName::YANDEXGAMES->value,
-                                    (string)$tagId,
-                                )
-                            )
-                        )
-                        ->get();
+                    $tags = $this->taxonomyByTags($payload);
+                    $categories = $this->taxonomyByCategories($payload);
 
                     $this->withProgressBar(
                         $payload->games,
-                        static function (GameDto $gameDto) use ($games, $tags) {
+                        function (GameDto $gameDto) use ($games, $tags, $categories) {
 
                             /** @var Game|null $game */
                             $game = $games->first(
@@ -89,17 +75,11 @@ class TagsYandexGamesSyncCommend extends Command
                                 return;
                             }
 
-                            $gameTagIds = collect($gameDto->tagIds)->map(static fn(int $id) => (string)$id);
-
-                            $gameTags = $tags->filter(
-                                static fn(Tag $tag) => $gameTagIds->contains(
-                                    $tag->sources
-                                        ->firstWhere('name', SourceName::YANDEXGAMES)
-                                        ->external_id
-                                )
-                            );
+                            $gameTags = $this->filterByTags($gameDto, $tags);
+                            $gameCategories = $this->filterByCategories($gameDto, $categories);
 
                             $game->tags()->sync($gameTags);
+                            $game->categories()->sync($gameCategories);
                         }
                     );
 
@@ -108,5 +88,55 @@ class TagsYandexGamesSyncCommend extends Command
             );
 
         return self::SUCCESS;
+    }
+
+    private function taxonomyByTags(GamesByIdsResponse $payload): Collection
+    {
+        return $this->taxonomyBy($payload, 'tagIds');
+    }
+
+    private function taxonomyByCategories(GamesByIdsResponse $payload): Collection
+    {
+        return $this->taxonomyBy($payload, 'categoryIds');
+    }
+
+    private function taxonomyBy(GamesByIdsResponse $payload, string $field): Collection
+    {
+        $query = match ($field) {
+            'tagIds' => Tag::query(),
+            'categoryIds' => Category::query(),
+            default => throw new \InvalidArgumentException(),
+        };
+
+        /** @var Collection<int> $ids */
+        $ids = collect($payload->games)->flatMap(static fn(GameDto $dto) => $dto->$field)->unique()->values();
+
+        /** @var Collection<SourceDto> $sourceDtos */
+        $sourceDtos = $ids->map(static fn(int $id) => new SourceDto(SourceName::YANDEXGAMES->value, (string)$id));
+
+        return $query->with('sources')->whereHasSources($sourceDtos)->get();
+    }
+
+    private function filterByTags(GameDto $gameDto, Collection $tags): Collection
+    {
+        return $this->filterBy($gameDto, $tags, 'tagIds');
+    }
+
+    private function filterByCategories(GameDto $gameDto, Collection $categories): Collection
+    {
+        return $this->filterBy($gameDto, $categories, 'categoryIds');
+    }
+
+    private function filterBy(GameDto $gameDto, Collection $collection, string $field): Collection
+    {
+        $ids = collect($gameDto->$field)->map(static fn(int $id) => (string)$id);
+
+        $res = $collection->filter(
+            static fn(Tag|Category $entity) => $ids->contains(
+                $entity->sources->firstWhere('name', SourceName::YANDEXGAMES)->external_id
+            )
+        );
+
+        return $res->values();
     }
 }
