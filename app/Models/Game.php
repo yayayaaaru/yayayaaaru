@@ -24,16 +24,23 @@ class Game extends Model
         'description',
         'developer_id',
         'released_at',
-        'rating',
         'age_rating',
         'cis_rating',
+        'tag_ids',
+        'category_ids',
+        'reviews_count',
+        'reviews_scores_stat',
+        'reviews_scores_avg',
+        'min_load_time',
     ];
 
     protected function casts(): array
     {
         return [
-            'rating' => 'decimal:1',
             'released_at' => 'datetime',
+            'category_ids' => 'array',
+            'tag_ids' => 'array',
+            'reviews_scores_stat' => 'array',
         ];
     }
 

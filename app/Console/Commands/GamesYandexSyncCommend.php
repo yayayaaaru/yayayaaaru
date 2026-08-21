@@ -81,10 +81,40 @@ class GamesYandexSyncCommend extends Command
                             $game->tags()->sync($gameTags);
                             $game->categories()->sync($gameCategories);
 
+                            if (is_null($game->cis_rating)) {
+                                $game->update(['cis_rating' => $gameDto->gqRating]);
+                            }
+
+                            if (is_null($game->reviews_scores_stat)) {
+                                $scores = $gameDto->score;
+
+                                $game->update([
+                                    'reviews_count' => $scores->count(),
+                                    'reviews_scores_stat' => $scores->all(),
+                                    'reviews_scores_avg' => $scores->average(),
+                                ]);
+                            }
+
+                            if (is_null($game->min_load_time)) {
+                                $game->update(['min_load_time' => $gameDto->minLoadTime]);
+                            }
+
+                            $tagIds = $gameTags->pluck('id');
+                            if (is_null($game->tag_ids)) {
+                                $game->update(['tag_ids' => $tagIds->all()]);
+                            }
+
+                            $categoryIds = $gameCategories->pluck('id');
+                            if (is_null($game->category_ids)) {
+                                $game->update(['category_ids' => $categoryIds->all()]);
+                            }
+
                             $released_at = $gameDto->firstPublished;
                             if (is_null($game->released_at)) {
                                 $game->update(['released_at' => $released_at]);
                             }
+
+                            // @todo
                         }
                     );
 
@@ -142,6 +172,6 @@ class GamesYandexSyncCommend extends Command
             )
         );
 
-        return $res->values();
+        return $res->sortBy('id')->values();
     }
 }
