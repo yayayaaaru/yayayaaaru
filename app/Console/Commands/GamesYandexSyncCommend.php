@@ -85,7 +85,7 @@ class GamesYandexSyncCommend extends Command
                                 $game->update(['cis_rating' => $gameDto->gqRating]);
                             }
 
-                            if (is_null($game->reviews_scores_stat)) {
+                            if (is_null($game->reviews_count)) {
                                 $scores = $gameDto->score;
 
                                 $game->update([

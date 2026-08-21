@@ -17,15 +17,16 @@ return new class extends Migration
             $table->dropColumn('rating');
 
             $table->unsignedTinyInteger('cis_rating')->nullable()->change();
-            $table->integer('reviews_count')->unsigned()->default(0)->after('cis_rating');
+            $table->integer('reviews_count')->unsigned()->nullable()->after('cis_rating');
             $table->json('reviews_scores_stat')->nullable()->after('reviews_count');
-            $table->decimal('reviews_scores_avg', 4, 3)->default(0.000)->after('reviews_scores_stat');
+            $table->decimal('reviews_scores_avg', 4, 3)->nullable()->after('reviews_scores_stat');
             $table->float('min_load_time')->unsigned()->nullable()->after('reviews_scores_avg');
             $table->json('tag_ids')->nullable()->after('min_load_time');
             $table->json('category_ids')->nullable()->after('tag_ids');
         });
 
         DB::table('games')->update(['cis_rating' => null]);
+        DB::table('games')->update(['description' => null]);
     }
 
     /**
