@@ -32,6 +32,7 @@ class Game extends Model
         'reviews_scores_stat',
         'reviews_scores_avg',
         'min_load_time_seconds',
+        'removed_at',
     ];
 
     protected function casts(): array
@@ -41,6 +42,7 @@ class Game extends Model
             'category_ids' => 'array',
             'tag_ids' => 'array',
             'reviews_scores_stat' => 'array',
+            'removed_at' => 'datetime',
         ];
     }
 

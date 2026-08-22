@@ -9,6 +9,7 @@ use App\Enums\SourceName;
 use App\Http\Integrations\YandexGames\DTOs\GameDto\GameDto;
 use App\Http\Integrations\YandexGames\Requests\GetGamesByIdsRequest;
 use App\Http\Integrations\YandexGames\Responses\GamesByIdsResponse;
+use App\Http\Integrations\YandexGames\Values\AppId;
 use App\Http\Integrations\YandexGames\YandexGamesConnector;
 use App\Models\Category;
 use App\Models\Game;
@@ -37,8 +38,8 @@ class GamesYandexSyncCommend extends Command
                 self::CHUNK_SIZE,
                 function (Collection $games) use ($connector) {
 
-                    /** @var string[] $ids */
-                    $ids = $games
+                    /** @var string[] $externalIds */
+                    $externalIds = $games
                         ->map(
                             static fn(Game $game) => $game
                                 ->sources
@@ -47,7 +48,7 @@ class GamesYandexSyncCommend extends Command
                         )
                         ->all();
 
-                    $res = $connector->send(new GetGamesByIdsRequest($ids));
+                    $res = $connector->send(new GetGamesByIdsRequest($externalIds));
 
                     if (! $res->ok()) {
                         return;
@@ -55,6 +56,25 @@ class GamesYandexSyncCommend extends Command
 
                     /** @var GamesByIdsResponse $payload */
                     $payload = $res->dto();
+
+                    $deletedIds = collect(
+                        collect($externalIds)->diff(
+                            collect($payload->games)->pluck('id')->map(static fn(AppId $id) => (string)$id->value)
+                        )
+                    );
+
+                    if ($deletedIds->isNotEmpty()) {
+                        Game::query()
+                            ->whereNull('removed_at')
+                            ->whereHasSources(
+                                $deletedIds->map(
+                                    static fn(string $externalId) => new SourceDto(
+                                        SourceName::YANDEXGAMES->value, $externalId
+                                    )
+                                )
+                            )
+                            ->update(['removed_at' => now()]);
+                    }
 
                     $tags = $this->taxonomyByTags($payload);
                     $categories = $this->taxonomyByCategories($payload);
