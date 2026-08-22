@@ -28,7 +28,6 @@ return new class extends Migration
         });
 
         DB::table('games')->update(['cis_score' => null]);
-        DB::table('games')->update(['description' => null]);
     }
 
     /**
