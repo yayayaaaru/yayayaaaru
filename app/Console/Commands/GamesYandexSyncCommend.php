@@ -18,7 +18,7 @@ use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 
-#[Signature('games:yandex:sync')] // @todo
+#[Signature('games:yandex:sync')]
 #[Description('Command description')]
 class GamesYandexSyncCommend extends Command
 {
@@ -81,8 +81,8 @@ class GamesYandexSyncCommend extends Command
                             $game->tags()->sync($gameTags);
                             $game->categories()->sync($gameCategories);
 
-                            if (is_null($game->cis_rating)) {
-                                $game->update(['cis_rating' => $gameDto->gqRating]);
+                            if (is_null($game->cis_score)) {
+                                $game->update(['cis_score' => $gameDto->gqRating]);
                             }
 
                             if (is_null($game->reviews_count)) {
@@ -95,8 +95,8 @@ class GamesYandexSyncCommend extends Command
                                 ]);
                             }
 
-                            if (is_null($game->min_load_time)) {
-                                $game->update(['min_load_time' => $gameDto->minLoadTime]);
+                            if (is_null($game->min_load_time_seconds)) {
+                                $game->update(['min_load_time_seconds' => $gameDto->minLoadTime]);
                             }
 
                             $tagIds = $gameTags->pluck('id');

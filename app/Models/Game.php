@@ -25,13 +25,13 @@ class Game extends Model
         'developer_id',
         'released_at',
         'age_rating',
-        'cis_rating',
+        'cis_score',
         'tag_ids',
         'category_ids',
         'reviews_count',
         'reviews_scores_stat',
         'reviews_scores_avg',
-        'min_load_time',
+        'min_load_time_seconds',
     ];
 
     protected function casts(): array
