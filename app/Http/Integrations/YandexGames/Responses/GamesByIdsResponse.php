@@ -9,6 +9,7 @@ use App\Http\Integrations\YandexGames\DTOs\FeedDto\WidgetDto\GameDto\RatingDto;
 use App\Http\Integrations\YandexGames\DTOs\GameDto\CategoryDto;
 use App\Http\Integrations\YandexGames\DTOs\GameDto\GameDto;
 use App\Http\Integrations\YandexGames\Values\AppId;
+use App\Http\Integrations\YandexGames\Values\Score;
 use App\Http\Integrations\YandexGames\Values\Url;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Carbon;
@@ -53,9 +54,10 @@ final readonly class GamesByIdsResponse implements Arrayable
                     $game['seoDescription'],
                     $game['generatedTitle'] ?? null,
                     $game['seoTitle'],
+                    $game['gqRating'] ?? 0,
                     $game['features'], // @todo
                     $game['tagIDs'],
-                    $game['score'],
+                    new Score($game['score']),
                     $game['minLoadTime'] ?? 0,
                     Carbon::parse($game['firstPublished']),
                     $game['extraFeatures'], // @todo
