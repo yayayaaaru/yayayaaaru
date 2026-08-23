@@ -94,7 +94,7 @@ class GamesYandexGrabberCommend extends Command
                                         }
 
                                         $targetSource = new SourceDto(
-                                            SourceName::YANDEXGAMES->value,
+                                            SourceName::YANDEXGAMES,
                                             (string) $itemDto->appId->value,
                                         );
 
@@ -109,8 +109,8 @@ class GamesYandexGrabberCommend extends Command
                                                 ]);
 
                                                 $newGame->sources()->create([
-                                                    'name' => $targetSource->name,
-                                                    'external_id' => $targetSource->external_id,
+                                                    'name' => $targetSource->name->value,
+                                                    'external_id' => $targetSource->externalId,
                                                 ]);
 
                                                 return $newGame;
@@ -120,7 +120,7 @@ class GamesYandexGrabberCommend extends Command
                                         foreach ($itemDto->categories as $categoryDto) {
 
                                             $targetSource = new SourceDto(
-                                                SourceName::YANDEXGAMES->value,
+                                                SourceName::YANDEXGAMES,
                                                 (string)$categoryDto->id,
                                             );
 
@@ -134,8 +134,8 @@ class GamesYandexGrabberCommend extends Command
                                                     ]);
 
                                                     $newCategory->sources()->create([
-                                                        'name' => $targetSource->name,
-                                                        'external_id' => $targetSource->external_id,
+                                                        'name' => $targetSource->name->value,
+                                                        'external_id' => $targetSource->externalId,
                                                     ]);
                                                 });
                                         }

@@ -69,7 +69,8 @@ class GamesYandexSyncCommend extends Command
                             ->whereHasSources(
                                 $deletedIds->map(
                                     static fn(string $externalId) => new SourceDto(
-                                        SourceName::YANDEXGAMES->value, $externalId
+                                        SourceName::YANDEXGAMES,
+                                        $externalId,
                                     )
                                 )
                             )
@@ -167,7 +168,10 @@ class GamesYandexSyncCommend extends Command
         $ids = collect($payload->games)->flatMap(static fn(GameDto $dto) => $dto->$field)->unique()->values();
 
         /** @var Collection<SourceDto> $sourceDtos */
-        $sourceDtos = $ids->map(static fn(int $id) => new SourceDto(SourceName::YANDEXGAMES->value, (string)$id));
+        $sourceDtos = $ids->map(static fn(int $id) => new SourceDto(
+            SourceName::YANDEXGAMES,
+            (string)$id,
+        ));
 
         return $query->with('sources')->whereHasSources($sourceDtos)->get();
     }

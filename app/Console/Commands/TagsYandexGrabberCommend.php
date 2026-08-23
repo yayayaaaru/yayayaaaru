@@ -38,8 +38,8 @@ class TagsYandexGrabberCommend extends Command
             function (TagDto $tagDto) {
 
                 $targetSource = new SourceDto(
-                    SourceName::YANDEXGAMES->value,
-                    (string) $tagDto->id,
+                    SourceName::YANDEXGAMES,
+                    (string)$tagDto->id,
                 );
 
                 Tag::query()
@@ -52,8 +52,8 @@ class TagsYandexGrabberCommend extends Command
                         ]);
 
                         $newTag->sources()->create([
-                            'name' => $targetSource->name,
-                            'external_id' => $targetSource->external_id,
+                            'name' => $targetSource->name->value,
+                            'external_id' => $targetSource->externalId,
                         ]);
 
                         return $newTag;
