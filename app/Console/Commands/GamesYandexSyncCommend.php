@@ -96,46 +96,54 @@ class GamesYandexSyncCommend extends Command
                                 return;
                             }
 
+                            $fetchedAt = now();
+
                             $gameTags = $this->filterByTags($gameDto, $tags);
                             $gameCategories = $this->filterByCategories($gameDto, $categories);
 
                             $game->tags()->sync($gameTags);
                             $game->categories()->sync($gameCategories);
 
-                            if (is_null($game->cis_score)) {
-                                $game->update(['cis_score' => $gameDto->gqRating]);
-                            }
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'title' => $gameDto->title,
+                            ]);
 
-                            if (is_null($game->reviews_count)) {
-                                $scores = $gameDto->score;
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'description' => $gameDto->description,
+                            ]);
 
-                                $game->update([
-                                    'reviews_count' => $scores->count(),
-                                    'reviews_scores_stat' => $scores->all(),
-                                    'reviews_scores_avg' => $scores->average(),
-                                ]);
-                            }
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'age_rating' => $gameDto->features['age_rating'], // @todo
+                            ]);
 
-                            if (is_null($game->min_load_time_seconds)) {
-                                $game->update(['min_load_time_seconds' => $gameDto->minLoadTime]);
-                            }
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'cis_score' => $gameDto->gqRating,
+                            ]);
+
+                            $scores = $gameDto->score;
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'reviews_count' => $scores->count(),
+                                'reviews_scores_stat' => $scores->all(),
+                                'reviews_scores_avg' => $scores->average(),
+                            ]);
+
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'min_load_time_seconds' => $gameDto->minLoadTime,
+                            ]);
 
                             $tagIds = $gameTags->pluck('id');
-                            if (is_null($game->tag_ids)) {
-                                $game->update(['tag_ids' => $tagIds->all()]);
-                            }
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'tag_ids' => $tagIds->all(),
+                            ]);
 
                             $categoryIds = $gameCategories->pluck('id');
-                            if (is_null($game->category_ids)) {
-                                $game->update(['category_ids' => $categoryIds->all()]);
-                            }
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'category_ids' => $categoryIds->all(),
+                            ]);
 
-                            $released_at = $gameDto->firstPublished;
                             if (is_null($game->released_at)) {
-                                $game->update(['released_at' => $released_at]);
+                                $game->update(['released_at' => $gameDto->firstPublished]);
                             }
-
-                            // @todo
                         }
                     );
 

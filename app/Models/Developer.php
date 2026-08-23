@@ -23,6 +23,18 @@ class Developer extends Model
         'slug',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'id' => 'integer',
+            'slug' => 'string',
+            'name' => 'string',
+            'views_count' => 'integer',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ];
+    }
+
     // @mago-ignore lint:no-redundant-method-override
     public static function query(): DeveloperBuilder
     {

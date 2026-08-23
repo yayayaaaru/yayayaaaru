@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Builders\GameBuilder;
 use App\Models\Concerns\Games\HasGameRelationships;
+use App\Models\Concerns\MorphsToHistories;
 use App\Models\Concerns\MorphsToSources;
 use Database\Factories\GameFactory;
 use Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder;
@@ -16,32 +17,44 @@ use Illuminate\Database\Eloquent\Model;
 class Game extends Model
 {
     /** @use HasFactory<GameFactory> */
-    use HasFactory, HasGameRelationships, MorphsToSources;
+    use HasFactory, HasGameRelationships, MorphsToSources, MorphsToHistories;
 
     protected $fillable = [
+        'developer_id',
         'slug',
         'title',
         'description',
-        'developer_id',
-        'released_at',
         'age_rating',
         'cis_score',
-        'tag_ids',
-        'category_ids',
         'reviews_count',
         'reviews_scores_stat',
         'reviews_scores_avg',
         'min_load_time_seconds',
+        'tag_ids',
+        'category_ids',
+        'views_count',
+        'released_at',
         'removed_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'released_at' => 'datetime',
-            'category_ids' => 'array',
-            'tag_ids' => 'array',
+            'developer_id' => Developer::class,
+            'slug' => 'string',
+            'title' => 'string',
+            'description' => 'string',
+            'age_rating' => 'string',
+            'cis_score' => 'integer',
+            'reviews_count' => 'integer',
             'reviews_scores_stat' => 'array',
+            'reviews_scores_avg' => 'float',
+            'min_load_time_seconds' => 'float',
+            'tag_ids' => 'array',
+            'category_ids' => 'array',
+            'released_at' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
             'removed_at' => 'datetime',
         ];
     }
@@ -51,5 +64,19 @@ class Game extends Model
     {
         /** @var GameBuilder */
         return parent::query();
+    }
+
+    public function historizedAttributes(): array
+    {
+        return [
+            'age_rating',
+            'reviews_count',
+            'reviews_scores_stat',
+            'reviews_scores_avg',
+            'min_load_time_seconds',
+            'cis_score',
+            'tag_ids',
+            'category_ids',
+        ];
     }
 }
