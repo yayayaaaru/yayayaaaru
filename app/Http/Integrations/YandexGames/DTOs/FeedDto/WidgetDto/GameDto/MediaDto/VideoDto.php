@@ -10,7 +10,6 @@ use App\Http\Integrations\YandexGames\Values\VideoDimensions;
 final readonly class VideoDto
 {
     public function __construct(
-        public Url $embedUrl,
         public Url $thumbnailUrl,
         public Url $thumbnailUrlPrefix,
         public Url $previewUrl,

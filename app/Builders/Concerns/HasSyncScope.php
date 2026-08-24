@@ -8,10 +8,8 @@ trait HasSyncScope
 {
     public function notSyncedFor(string $interval = '1 hour'): static
     {
-        return $this->where(function (self $query) use ($interval) {
-            $query
-                ->whereNull('synced_at')
-                ->orWhere('synced_at', '<', now()->sub($interval));
-        });
+        return $this->where(
+            static fn(self $query) => $query->whereNull('synced_at')->orWhere('synced_at', '<', now()->sub($interval))
+        );
     }
 }
