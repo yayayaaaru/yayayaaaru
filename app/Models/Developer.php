@@ -21,6 +21,7 @@ class Developer extends Model
     protected $fillable = [
         'name',
         'slug',
+        'synced_at',
     ];
 
     protected function casts(): array
@@ -32,6 +33,7 @@ class Developer extends Model
             'views_count' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
+            'synced_at' => 'datetime',
         ];
     }
 

@@ -32,6 +32,8 @@ class GamesYandexSyncCommend extends Command
     {
         Game::query()
             ->with('sources')
+            ->notSyncedFor('3 hours') // @todo
+            ->whereNull('removed_at')
             ->orderByDesc('created_at')
             ->orderBy('id')
             ->chunk(
@@ -144,6 +146,10 @@ class GamesYandexSyncCommend extends Command
                             if (is_null($game->released_at)) {
                                 $game->update(['released_at' => $gameDto->firstPublished]);
                             }
+
+                            $game->timestamps = false;
+
+                            $game->update(['synced_at' => now()]);
                         }
                     );
 

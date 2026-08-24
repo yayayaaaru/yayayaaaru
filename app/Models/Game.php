@@ -35,12 +35,13 @@ class Game extends Model
         'views_count',
         'released_at',
         'removed_at',
+        'synced_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'developer_id' => Developer::class,
+            'developer_id' => 'integer',
             'slug' => 'string',
             'title' => 'string',
             'description' => 'string',
@@ -56,6 +57,7 @@ class Game extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'removed_at' => 'datetime',
+            'synced_at' => 'datetime',
         ];
     }
 

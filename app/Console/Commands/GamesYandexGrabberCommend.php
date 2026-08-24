@@ -36,6 +36,7 @@ class GamesYandexGrabberCommend extends Command
 
         Developer::query()
             ->with('sources')
+            ->notSyncedFor('3 hours') // @todo
             ->orderByDesc('created_at')
             ->orderBy('id')
             ->chunk(
@@ -149,6 +150,10 @@ class GamesYandexGrabberCommend extends Command
                             $connector->query()->add('rtx-reqid', $pageInfoDto->requestId);
                         }
                         while ($pageInfoDto->hasNextPage);
+
+                        $developer->timestamps = false;
+
+                        $developer->update(['synced_at' => now()]); // @todo
                     }
                 }
         );
