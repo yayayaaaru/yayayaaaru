@@ -79,6 +79,8 @@ class Game extends Model
             'cis_score',
             'tag_ids',
             'category_ids',
+            'removed_at',
+            'synced_at',
         ];
     }
 }

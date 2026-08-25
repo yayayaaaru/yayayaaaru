@@ -34,14 +34,17 @@ class GamesYandexGrabberCommend extends Command
     {
         $connector->query()->add('games_count', 24);
 
+        $syncedAt = now();
+
         Developer::query()
             ->with('sources')
-            ->notSyncedFor('3 hours') // @todo
-            ->orderByDesc('created_at')
+            ->notSyncedFor('3 hours')
             ->orderBy('id')
-            ->chunk(
+            ->chunkById(
                 self::CHUNK_SIZE,
-                function (Collection $developers) use ($connector) {
+                function (Collection $developers) use ($connector, $syncedAt) {
+
+                    $fetchedAt = now();
 
                     /** @var Developer $developer */
                     foreach ($developers as $developer) {
@@ -88,7 +91,7 @@ class GamesYandexGrabberCommend extends Command
 
                                 $this->withProgressBar(
                                     $feedDto->items,
-                                    function (ItemDto $itemDto) use ($developer) {
+                                    function (ItemDto $itemDto) use ($developer, $fetchedAt) {
 
                                         if ($itemDto->type !== 'game') {
                                             return;
@@ -140,6 +143,10 @@ class GamesYandexGrabberCommend extends Command
                                                     ]);
                                                 });
                                         }
+
+                                        $developer->withHistoryFetchedAt($fetchedAt)->update([
+                                            'name' => $itemDto->developer->name,
+                                        ]); // @todo
                                     }
                                 );
 
@@ -153,9 +160,12 @@ class GamesYandexGrabberCommend extends Command
 
                         $developer->timestamps = false;
 
-                        $developer->update(['synced_at' => now()]); // @todo
+                        $developer->withHistoryFetchedAt($fetchedAt)->update([
+                            'synced_at' => $syncedAt,
+                        ]); // @todo
                     }
-                }
+                },
+                column: 'id'
         );
 
         return self::SUCCESS;

@@ -30,15 +30,18 @@ class GamesYandexSyncCommend extends Command
      */
     public function handle(YandexGamesConnector $connector): int
     {
+        $syncedAt = now();
+
         Game::query()
             ->with('sources')
             ->notSyncedFor('3 hours') // @todo
             ->whereNull('removed_at')
-            ->orderByDesc('created_at')
             ->orderBy('id')
-            ->chunk(
+            ->chunkById(
                 self::CHUNK_SIZE,
-                function (Collection $games) use ($connector) {
+                function (Collection $games) use ($connector, $syncedAt) {
+
+                    $fetchedAt = now();
 
                     /** @var string[] $externalIds */
                     $externalIds = $games
@@ -76,6 +79,8 @@ class GamesYandexSyncCommend extends Command
                                     )
                                 )
                             )
+                            ->first()
+                            ->withHistoryFetchedAt($fetchedAt)
                             ->update(['removed_at' => now()]);
                     }
 
@@ -84,7 +89,7 @@ class GamesYandexSyncCommend extends Command
 
                     $this->withProgressBar(
                         $payload->games,
-                        function (GameDto $gameDto) use ($games, $tags, $categories) {
+                        function (GameDto $gameDto) use ($games, $tags, $categories, $syncedAt, $fetchedAt) {
 
                             /** @var Game|null $game */
                             $game = $games->first(
@@ -97,8 +102,6 @@ class GamesYandexSyncCommend extends Command
                             if (is_null($game)) {
                                 return;
                             }
-
-                            $fetchedAt = now();
 
                             $gameTags = $this->filterByTags($gameDto, $tags);
                             $gameCategories = $this->filterByCategories($gameDto, $categories);
@@ -149,12 +152,13 @@ class GamesYandexSyncCommend extends Command
 
                             $game->timestamps = false;
 
-                            $game->update(['synced_at' => now()]);
+                            $game->update(['synced_at' => $syncedAt]);
                         }
                     );
 
                     $this->info(' success');
-                }
+                },
+                column: 'id'
             );
 
         return self::SUCCESS;

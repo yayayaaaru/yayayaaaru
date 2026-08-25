@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Builders\DeveloperBuilder;
 use App\Models\Concerns\Developers\HasDeveloperRelationships;
+use App\Models\Concerns\MorphsToHistories;
 use App\Models\Concerns\MorphsToSources;
 use Database\Factories\DeveloperFactory;
 use Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
 class Developer extends Model
 {
     /** @use HasFactory<DeveloperFactory> */
-    use HasFactory, HasDeveloperRelationships, MorphsToSources;
+    use HasFactory, HasDeveloperRelationships, MorphsToSources, MorphsToHistories;
 
     protected $fillable = [
         'name',
@@ -42,5 +43,13 @@ class Developer extends Model
     {
         /** @var DeveloperBuilder */
         return parent::query();
+    }
+
+    public function historizedAttributes(): array
+    {
+        return [
+            'name',
+            'synced_at',
+        ];
     }
 }
