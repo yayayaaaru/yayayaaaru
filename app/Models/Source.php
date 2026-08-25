@@ -22,7 +22,13 @@ class Source extends Model
     protected function casts(): array
     {
         return [
+            'id' => 'integer',
+            'sourceable_type' => 'string',
+            'sourceable_id' => 'integer',
             'name' => SourceNameCast::class,
+            'external_id' => 'string',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 }

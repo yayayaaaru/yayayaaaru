@@ -30,13 +30,18 @@ class GamesYandexSyncCommend extends Command
      */
     public function handle(YandexGamesConnector $connector): int
     {
+        $syncedAt = now();
+
         Game::query()
             ->with('sources')
-            ->orderByDesc('created_at')
+            ->notSyncedFor('3 hours') // @todo
+            ->whereNull('removed_at')
             ->orderBy('id')
-            ->chunk(
+            ->chunkById(
                 self::CHUNK_SIZE,
-                function (Collection $games) use ($connector) {
+                function (Collection $games) use ($connector, $syncedAt) {
+
+                    $fetchedAt = now();
 
                     /** @var string[] $externalIds */
                     $externalIds = $games
@@ -69,10 +74,13 @@ class GamesYandexSyncCommend extends Command
                             ->whereHasSources(
                                 $deletedIds->map(
                                     static fn(string $externalId) => new SourceDto(
-                                        SourceName::YANDEXGAMES->value, $externalId
+                                        SourceName::YANDEXGAMES,
+                                        $externalId,
                                     )
                                 )
                             )
+                            ->first()
+                            ->withHistoryFetchedAt($fetchedAt)
                             ->update(['removed_at' => now()]);
                     }
 
@@ -81,7 +89,7 @@ class GamesYandexSyncCommend extends Command
 
                     $this->withProgressBar(
                         $payload->games,
-                        function (GameDto $gameDto) use ($games, $tags, $categories) {
+                        function (GameDto $gameDto) use ($games, $tags, $categories, $syncedAt, $fetchedAt) {
 
                             /** @var Game|null $game */
                             $game = $games->first(
@@ -101,45 +109,56 @@ class GamesYandexSyncCommend extends Command
                             $game->tags()->sync($gameTags);
                             $game->categories()->sync($gameCategories);
 
-                            if (is_null($game->cis_score)) {
-                                $game->update(['cis_score' => $gameDto->gqRating]);
-                            }
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'title' => $gameDto->title,
+                            ]);
 
-                            if (is_null($game->reviews_count)) {
-                                $scores = $gameDto->score;
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'description' => $gameDto->description,
+                            ]);
 
-                                $game->update([
-                                    'reviews_count' => $scores->count(),
-                                    'reviews_scores_stat' => $scores->all(),
-                                    'reviews_scores_avg' => $scores->average(),
-                                ]);
-                            }
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'age_rating' => $gameDto->features['age_rating'], // @todo
+                            ]);
 
-                            if (is_null($game->min_load_time_seconds)) {
-                                $game->update(['min_load_time_seconds' => $gameDto->minLoadTime]);
-                            }
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'cis_score' => $gameDto->gqRating,
+                            ]);
+
+                            $scores = $gameDto->score;
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'reviews_count' => $scores->count(),
+                                'reviews_scores_stat' => $scores->all(),
+                                'reviews_scores_avg' => $scores->average(),
+                            ]);
+
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'min_load_time_seconds' => $gameDto->minLoadTime,
+                            ]);
 
                             $tagIds = $gameTags->pluck('id');
-                            if (is_null($game->tag_ids)) {
-                                $game->update(['tag_ids' => $tagIds->all()]);
-                            }
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'tag_ids' => $tagIds->all(),
+                            ]);
 
                             $categoryIds = $gameCategories->pluck('id');
-                            if (is_null($game->category_ids)) {
-                                $game->update(['category_ids' => $categoryIds->all()]);
-                            }
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'category_ids' => $categoryIds->all(),
+                            ]);
 
-                            $released_at = $gameDto->firstPublished;
                             if (is_null($game->released_at)) {
-                                $game->update(['released_at' => $released_at]);
+                                $game->update(['released_at' => $gameDto->firstPublished]);
                             }
 
-                            // @todo
+                            $game->timestamps = false;
+
+                            $game->update(['synced_at' => $syncedAt]);
                         }
                     );
 
                     $this->info(' success');
-                }
+                },
+                column: 'id'
             );
 
         return self::SUCCESS;
@@ -167,7 +186,10 @@ class GamesYandexSyncCommend extends Command
         $ids = collect($payload->games)->flatMap(static fn(GameDto $dto) => $dto->$field)->unique()->values();
 
         /** @var Collection<SourceDto> $sourceDtos */
-        $sourceDtos = $ids->map(static fn(int $id) => new SourceDto(SourceName::YANDEXGAMES->value, (string)$id));
+        $sourceDtos = $ids->map(static fn(int $id) => new SourceDto(
+            SourceName::YANDEXGAMES,
+            (string)$id,
+        ));
 
         return $query->with('sources')->whereHasSources($sourceDtos)->get();
     }

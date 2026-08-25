@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Builders;
 
 use App\DTOs\SourceDto;
-use App\Enums\SourceName;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -37,7 +36,7 @@ abstract class SourceableBuilder extends Builder
         $sources = $this->toCollection($sources)
             ->filter(
                 static fn (SourceDto $source) => in_array(
-                    SourceName::tryFrom($source->name),
+                    $source->name,
                     $allowedNames,
                     true,
                 ),
@@ -62,8 +61,8 @@ abstract class SourceableBuilder extends Builder
     private function matchSource(Builder $query, SourceDto $source): Builder
     {
         return $query
-            ->where('name', $source->name)
-            ->where('external_id', $source->external_id);
+            ->where('name', $source->name->value)
+            ->where('external_id', $source->externalId);
     }
 
     private function toCollection(iterable $sources): Collection

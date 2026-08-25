@@ -58,7 +58,7 @@ class DevelopersYandexGrabberCommend extends Command
                         $gameDto = $widgetDto->data;
 
                         $targetSource = new SourceDto(
-                            SourceName::YANDEXGAMES->value,
+                            SourceName::YANDEXGAMES,
                             (string)$gameDto->developer->id,
                         );
 
@@ -72,8 +72,8 @@ class DevelopersYandexGrabberCommend extends Command
                                 ]);
 
                                 $newDeveloper->sources()->create([
-                                    'name' => $targetSource->name,
-                                    'external_id' => $targetSource->external_id,
+                                    'name' => $targetSource->name->value,
+                                    'external_id' => $targetSource->externalId,
                                 ]);
 
                                 return $newDeveloper;

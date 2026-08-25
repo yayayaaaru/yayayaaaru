@@ -34,13 +34,17 @@ class GamesYandexGrabberCommend extends Command
     {
         $connector->query()->add('games_count', 24);
 
+        $syncedAt = now();
+
         Developer::query()
             ->with('sources')
-            ->orderByDesc('created_at')
+            ->notSyncedFor('3 hours')
             ->orderBy('id')
-            ->chunk(
+            ->chunkById(
                 self::CHUNK_SIZE,
-                function (Collection $developers) use ($connector) {
+                function (Collection $developers) use ($connector, $syncedAt) {
+
+                    $fetchedAt = now();
 
                     /** @var Developer $developer */
                     foreach ($developers as $developer) {
@@ -87,14 +91,14 @@ class GamesYandexGrabberCommend extends Command
 
                                 $this->withProgressBar(
                                     $feedDto->items,
-                                    function (ItemDto $itemDto) use ($developer) {
+                                    function (ItemDto $itemDto) use ($developer, $fetchedAt) {
 
                                         if ($itemDto->type !== 'game') {
                                             return;
                                         }
 
                                         $targetSource = new SourceDto(
-                                            SourceName::YANDEXGAMES->value,
+                                            SourceName::YANDEXGAMES,
                                             (string) $itemDto->appId->value,
                                         );
 
@@ -109,8 +113,8 @@ class GamesYandexGrabberCommend extends Command
                                                 ]);
 
                                                 $newGame->sources()->create([
-                                                    'name' => $targetSource->name,
-                                                    'external_id' => $targetSource->external_id,
+                                                    'name' => $targetSource->name->value,
+                                                    'external_id' => $targetSource->externalId,
                                                 ]);
 
                                                 return $newGame;
@@ -120,7 +124,7 @@ class GamesYandexGrabberCommend extends Command
                                         foreach ($itemDto->categories as $categoryDto) {
 
                                             $targetSource = new SourceDto(
-                                                SourceName::YANDEXGAMES->value,
+                                                SourceName::YANDEXGAMES,
                                                 (string)$categoryDto->id,
                                             );
 
@@ -134,11 +138,15 @@ class GamesYandexGrabberCommend extends Command
                                                     ]);
 
                                                     $newCategory->sources()->create([
-                                                        'name' => $targetSource->name,
-                                                        'external_id' => $targetSource->external_id,
+                                                        'name' => $targetSource->name->value,
+                                                        'external_id' => $targetSource->externalId,
                                                     ]);
                                                 });
                                         }
+
+                                        $developer->withHistoryFetchedAt($fetchedAt)->update([
+                                            'name' => $itemDto->developer->name,
+                                        ]); // @todo
                                     }
                                 );
 
@@ -149,8 +157,15 @@ class GamesYandexGrabberCommend extends Command
                             $connector->query()->add('rtx-reqid', $pageInfoDto->requestId);
                         }
                         while ($pageInfoDto->hasNextPage);
+
+                        $developer->timestamps = false;
+
+                        $developer->withHistoryFetchedAt($fetchedAt)->update([
+                            'synced_at' => $syncedAt,
+                        ]); // @todo
                     }
-                }
+                },
+                column: 'id'
         );
 
         return self::SUCCESS;

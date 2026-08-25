@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('cis_rating')->nullable()->change();
             $table->integer('reviews_count')->unsigned()->nullable()->after('cis_rating');
             $table->json('reviews_scores_stat')->nullable()->after('reviews_count');
-            $table->decimal('reviews_scores_avg', 4, 3)->nullable()->after('reviews_scores_stat');
+            $table->decimal('reviews_scores_avg', 4, 3)->unsigned()->nullable()->after('reviews_scores_stat');
             $table->decimal('min_load_time_seconds', 8,3)->unsigned()->nullable()->after('reviews_scores_avg');
             $table->json('tag_ids')->nullable()->after('min_load_time_seconds');
             $table->json('category_ids')->nullable()->after('tag_ids');

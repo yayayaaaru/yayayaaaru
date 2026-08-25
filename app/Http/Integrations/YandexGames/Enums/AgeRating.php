@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Enums;
+namespace App\Http\Integrations\YandexGames\Enums;
 
-enum GameAgeRating: string
+enum AgeRating: string
 {
     case R0 = '0+';
     case R6 = '6+';

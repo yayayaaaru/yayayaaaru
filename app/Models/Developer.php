@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Builders\DeveloperBuilder;
 use App\Models\Concerns\Developers\HasDeveloperRelationships;
+use App\Models\Concerns\MorphsToHistories;
 use App\Models\Concerns\MorphsToSources;
 use Database\Factories\DeveloperFactory;
 use Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder;
@@ -16,17 +17,39 @@ use Illuminate\Database\Eloquent\Model;
 class Developer extends Model
 {
     /** @use HasFactory<DeveloperFactory> */
-    use HasFactory, HasDeveloperRelationships, MorphsToSources;
+    use HasFactory, HasDeveloperRelationships, MorphsToSources, MorphsToHistories;
 
     protected $fillable = [
         'name',
         'slug',
+        'synced_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'id' => 'integer',
+            'slug' => 'string',
+            'name' => 'string',
+            'views_count' => 'integer',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'synced_at' => 'datetime',
+        ];
+    }
 
     // @mago-ignore lint:no-redundant-method-override
     public static function query(): DeveloperBuilder
     {
         /** @var DeveloperBuilder */
         return parent::query();
+    }
+
+    public function historizedAttributes(): array
+    {
+        return [
+            'name',
+            'synced_at',
+        ];
     }
 }

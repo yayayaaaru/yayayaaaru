@@ -22,6 +22,17 @@ class Category extends Model
         'title',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'id' => 'integer',
+            'slug' => 'string',
+            'title' => 'string',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ];
+    }
+
     // @mago-ignore lint:no-redundant-method-override
     public static function query(): CategoryBuilder
     {

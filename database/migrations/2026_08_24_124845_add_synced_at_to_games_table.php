@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Integrations\YandexGames\Enums\AgeRating;
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,9 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('games', function (Blueprint $table) {
-            $table->string('age_rating', 6)->default(AgeRating::R0)->after('description');
-            $table->unsignedTinyInteger('cis_rating')->default(0)->after('age_rating');
-            $table->decimal('rating', 2, 1)->default(0.0)->after('cis_rating');
+            $table->dateTime('synced_at')->nullable()->after('updated_at');
         });
     }
 
@@ -25,9 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('games', function (Blueprint $table) {
-            $table->dropColumn('rating');
-            $table->dropColumn('age_rating');
-            $table->dropColumn('cis_rating');
+            $table->dropColumn('synced_at');
         });
     }
 };
