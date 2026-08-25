@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Builders\TagBuilder;
 use App\Models\Concerns\MorphsToSources;
+use App\Models\Concerns\Tags\HasTagRelationships;
 use Database\Factories\TagFactory;
 use Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 class Tag extends Model
 {
     /** @use HasFactory<TagFactory> */
-    use HasFactory, MorphsToSources;
+    use HasFactory, HasTagRelationships, MorphsToSources;
 
     protected $fillable = [
         'slug',

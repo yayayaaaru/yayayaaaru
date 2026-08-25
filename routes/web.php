@@ -2,9 +2,29 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::group([], function () {
+    require __DIR__ . '/web.games.php';
+    require __DIR__ . '/web.developers.php';
+});
+
 Route::get('/', function () {
-    $g = \App\Models\Game::find(3520);
-    $h = app(\App\Services\HistoryService::class);
-    dd($h->getFieldTimeline($g, 'cis_score', now()->subMonth()));
-    return view('welcome');
+    $developers = \App\Models\Developer::latest()->limit(7)->get();
+
+    $games = \App\Models\Game::with('developer')->latest()->limit(7)->get();
+
+    $categories = \App\Models\Category::withCount([
+        'games',
+        'games as period_games_count' => function ($query) {
+            $query->whereDate('released_at', today());
+        },
+    ])->orderByDesc('period_games_count')->orderByDesc('games_count')->limit(10)->get();
+
+    $tags = \App\Models\Tag::withCount([
+        'games',
+        'games as period_games_count' => function ($query) {
+            $query->whereDate('released_at', today());
+        },
+    ])->orderByDesc('period_games_count')->orderByDesc('games_count')->limit(10)->get();
+
+    return view('web.index', compact('developers', 'games', 'categories', 'tags'));
 });
