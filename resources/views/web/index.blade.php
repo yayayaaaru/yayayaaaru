@@ -20,7 +20,9 @@
             </div>
             <div class="text-secondary">
                 <div>Зарегистрируйтесь, чтобы сохранять избранные игры, получать уведомления о изменениях рейтингов и делиться собственными оценками.</div>
-                <div class="mt-3"><a href="/" class="btn btn-primary w-100 disabled">Создать аккаунт</a></div>
+                <div class="mt-3 text-uppercase">
+                    <a href="/" class="btn btn-primary w-100 disabled">Создать аккаунт</a>
+                </div>
             </div>
         </div>
     </div>

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'developers', 'as' => 'developers'], function () {
     Route::get('/', [DeveloperController::class, 'showcase'])->name('.showcase');
     Route::get('/{source}', [DeveloperController::class, 'index'])->whereIn('source', Source::cases());
-    Route::get('/{source}/latest', [DeveloperController::class, 'latest'])->whereIn('latest', Source::cases());
+    Route::get('/{source}/latest', [DeveloperController::class, 'latest'])->whereIn('latest', Source::cases())->name('.latest');
 //    Route::group(['prefix' => '{developer}'], function () {
 //        Route::get('/', [DeveloperController::class, 'redirect'])->name('.redirect');
 //        Route::group(['prefix' => '{slug}', 'middleware' => ['redirect.developerslug']], function () {

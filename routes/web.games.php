@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'games', 'as' => 'games'], function () {
     Route::get('/', [GameController::class, 'showcase'])->name('.showcase');
     Route::get('/{source}', [GameController::class, 'index'])->whereIn('source', Source::cases());
-    Route::get('/{source}/latest', [GameController::class, 'latest'])->whereIn('source', Source::cases());
+    Route::get('/{source}/latest', [GameController::class, 'latest'])->whereIn('source', Source::cases())->name('.latest');
 //    Route::group(['prefix' => '{game}'], function () {
 //        Route::get('/', [GameController::class, 'redirect'])->name('.redirect');
 //        Route::group(['prefix' => '{slug}', 'middleware' => ['redirect.gameslug']], function () {

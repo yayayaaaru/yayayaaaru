@@ -15,7 +15,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal me-auto pe-0 pe-md-3">
-            <a href="/" class="h1 m-0 text-decoration-none text-uppercase" title="Главная">
+            <a href="/" class="h1 m-0 text-decoration-none text-uppercase" title="Главная" style="font-size: 35px;">
                 {!! brand() !!}
             </a>
         </div>

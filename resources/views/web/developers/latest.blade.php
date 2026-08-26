@@ -9,7 +9,7 @@
     <div class="page-header">
         <div class="container">
             <div class="page-title">{{ $source->name }}</div>
-            <div class="text-secondary">Новое за сегодня</div>
+            <div class="text-secondary">Свежие студии, которые только что добавили свои игры на платформу.</div>
         </div>
     </div>
     <div class="page-body">
