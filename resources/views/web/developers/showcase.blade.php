@@ -5,9 +5,9 @@
 {{--        {{ Breadcrumbs::render('developers.showcase') }}--}}
 {{--    </div>--}}
     <div class="page-header">
-        <div class="container">
+        <div class="container text-uppercase">
             <div class="page-title">Разработчики</div>
-            <div class="text-secondary">Витрина</div>
+            <div class="text-muted">Витрина</div>
         </div>
     </div>
     <div class="page-body">

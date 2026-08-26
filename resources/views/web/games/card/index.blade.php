@@ -1,6 +1,6 @@
 @props(['game', 'developer', 'source'])
 
-@section('title', 'Игра')
+@section('title', sprintf('%s (%d) от %s', $game->title, $game->released_at->year, $source->name->label()))
 
 <x-layouts::main>
 {{--    <div class="container mt-4">--}}
@@ -44,12 +44,60 @@
                                 {{ $developer->name }}
                             </a>
                         </div>
-                        <hr class="my-3">
+                        <hr class="my-2">
                         <div>
                             Дата выхода
                             <span class="text-muted">
-                                {{ $game->released_at?->format('d.m.Y') ?? 'нет информации' }}
+                                @if($game->released_at)
+                                {{ $game->released_at->format('d.m.Y') }} ({{ $game->released_at->ago() }})
+                                @else
+                                <b>нет информации</b>
+                                @endif
                             </span>
+                        </div>
+                        <x-ui.subheadline label="Звезды" class="mt-3"/>
+                        <div class="mt-3">
+                            @foreach($game->reviews_scores_stat as $star => $value)
+                                <div class="text-yellow d-flex">
+                                    <div class="flex-grow-1">
+                                        <b>{{ 6 - $star }}</b>
+                                        @for($i = 5; $i >= $star; --$i)
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="24"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                fill="currentColor"
+                                                class="icon icon-tabler icons-tabler-filled icon-tabler-star"
+                                            >
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/>
+                                            </svg>
+                                        @endfor
+                                        </div>
+                                    <span>
+                                        {{ $value }}
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            class="icon icon-tabler icons-tabler-outline icon-tabler-users"
+                                        >
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                            <path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/>
+                                            <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"/>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                            <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                     <div class="mt-auto">
@@ -88,17 +136,19 @@
                             @endauth
                         </div>
                         <div class="d-flex align-items-center mt-3">
-                            @auth
+{{--                            @auth--}}
                                 @php($is_favorite = $game->is_favorite)
-                                <form action="{{ route('favorites.toggle') }}" method="post">
+                                <form action="{{--{{ route('favorites.toggle') }}--}}" method="post">
                                     @csrf
                                     <input type="hidden" name="favoriteable[type]" value="{{ $game::class }}" autocomplete="off">
                                     <input type="hidden" name="favoriteable[id]" value="{{ $game->id }}" autocomplete="off">
                                     <button
+                                        @class(['btn', 'me-3', $is_favorite ? 'btn-warning' : 'btn-outline-warning'])
+                                        style="padding: 15px;"
                                         type="submit"
-                                        @class(['btn', 'me-3', 'p-2', $is_favorite ? 'btn-warning' : 'btn-outline-warning'])
                                         title="Добавить в избранное"
                                         data-loading-text
+                                        disabled
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-star m-0">
                                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -106,7 +156,7 @@
                                         </svg>
                                     </button>
                                 </form>
-                            @endauth
+{{--                            @endauth--}}
                             <div
                                 @class(['card', 'h-100', 'w-100', $game->rating_class])
                                 title="0 плюсов/ 0 минусов"
@@ -127,7 +177,7 @@
                                                 'justify-content-between' => auth()->check(),
                                                 'justify-content-center' => !auth()->check(),
                                             ])
-                                       />
+                                     />
                                     @endif
                                 @else
                                     <div class="text-center mx-lg-0 my-3">

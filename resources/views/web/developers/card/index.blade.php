@@ -1,6 +1,6 @@
 @props(['developer', 'source'])
 
-@section('title', sprintf('Разработчик — %s', $developer->name))
+@section('title', sprintf('Разработчик — %s, %s', $developer->name, ($sourceName = $source->name->label())))
 
 <x-layouts::main>
 {{--    <div class="container mt-4">--}}
@@ -9,7 +9,7 @@
     <div class="page-header">
         <div class="container text-uppercase">
             <div class="page-title">Разработчики</div>
-            <div class="text-muted">{{ $source->name->label() }}</div>
+            <div class="text-muted">{{ $sourceName }}</div>
         </div>
     </div>
     <div class="page-body">
@@ -62,7 +62,7 @@
                     <h1 class="m-0">{{ $developer->name }}</h1>
                     <div class="text-muted">Анонимный разработчик</div>
                 </div>
-                @auth
+{{--                @auth--}}
                     <div class="ms-md-auto ms-0">
                         @php($is_favorite = $developer->is_favorite)
                         <form action="{{--{{ route('favorites.toggle') }}--}}" method="post">
@@ -73,6 +73,7 @@
                                 @class(['justify-content-start', 'btn', 'mb-2', 'w-100', $is_favorite ? 'btn-warning' : 'btn-outline-warning'])
                                 type="submit"
                                 data-loading-text="Выполнение..."
+                                disabled
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-star">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -111,7 +112,7 @@
                             </div>
                         </div>
                     </div>
-                @endauth
+{{--                @endauth--}}
             </div>
             <div class="card mt-3">
                 <div class="card-body">Биографии пока нет</div>
