@@ -29,6 +29,15 @@ class DeveloperController extends Controller
         return view('web.developers.latest', compact('source', 'developers'));
     }
 
+    public function games(Developer $developer)
+    {
+        $source = $developer->sources->first(static fn($s) => $s->name === Source::YANDEXGAMES);
+
+        $games = $developer->games()->paginate(30);
+
+        return view('web.developers.card.games', compact('source', 'developer', 'games'));
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -42,5 +51,15 @@ class DeveloperController extends Controller
             ->paginate(30);
 
         return view('web.developers.index', compact('developers', 'source'));
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Developer $developer)
+    {
+        $source = $developer->sources->first(static fn($s) => $s->name === Source::YANDEXGAMES);
+
+        return view('web.developers.card.index', compact('developer', 'source'));
     }
 }

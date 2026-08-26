@@ -44,4 +44,16 @@ class GameController extends Controller
 
         return view('web.games.index', compact('games', 'source'));
     }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Game $game)
+    {
+        $source = $game->sources->first(static fn($s) => $s->name === Source::YANDEXGAMES);
+
+        $developer = $game->developer;
+
+        return view('web.games.card.index', compact('game', 'developer', 'source'));
+    }
 }

@@ -7,9 +7,9 @@
 {{--        {{ Breadcrumbs::render('developers', $source) }}--}}
 {{--    </div>--}}
     <div class="page-header">
-        <div class="container">
+        <div class="container text-uppercase">
             <div class="page-title">Разработчики</div>
-            <div class="text-secondary">{{ $source->label() }}</div>
+            <div class="text-muted">{{ $source->label() }}</div>
         </div>
     </div>
     <div class="page-body">

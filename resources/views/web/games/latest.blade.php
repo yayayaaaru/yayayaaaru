@@ -7,9 +7,9 @@
     {{--        {{ Breadcrumbs::render('developers.showcase') }}--}}
     {{--    </div>--}}
     <div class="page-header">
-        <div class="container">
-            <div class="page-title">{{ $source->name }}</div>
-            <div class="text-secondary">Свежие релизы сегодняшнего дня — играйте в новинки прямо сейчас.</div>
+        <div class="container text-uppercase">
+            <div class="page-title">{{ $source->label() }}</div>
+            <div class="text-muted">Свежие релизы сегодняшнего дня — играйте в новинки прямо сейчас.</div>
         </div>
     </div>
     <div class="page-body">

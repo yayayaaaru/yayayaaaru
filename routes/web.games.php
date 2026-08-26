@@ -10,10 +10,10 @@ Route::group(['prefix' => 'games', 'as' => 'games'], function () {
     Route::get('/', [GameController::class, 'showcase'])->name('.showcase');
     Route::get('/{source}', [GameController::class, 'index'])->whereIn('source', Source::cases());
     Route::get('/{source}/latest', [GameController::class, 'latest'])->whereIn('source', Source::cases())->name('.latest');
-//    Route::group(['prefix' => '{game}'], function () {
+    Route::group(['prefix' => '{game}'], function () {
 //        Route::get('/', [GameController::class, 'redirect'])->name('.redirect');
-//        Route::group(['prefix' => '{slug}', 'middleware' => ['redirect.gameslug']], function () {
-//            Route::get('/', [GameController::class, 'show'])->name('.show');
+        Route::group(['prefix' => '{slug}', 'middleware' => ['redirect.gameslug']], function () {
+            Route::get('/', [GameController::class, 'show'])->name('.show');
 //            Route::group(['prefix' => 'votes', 'as' => '.votes', 'middleware' => ['auth']], function () {
 //                Route::get('/', [GameVoteController::class, 'index']);
 //                Route::post('/', [GameVoteController::class, 'store'])->name('.store');
@@ -22,6 +22,6 @@ Route::group(['prefix' => 'games', 'as' => 'games'], function () {
 //            Route::group(['prefix' => 'comments', 'as' => '.comments'], function () {
 //                Route::get('/', [GameCommentController::class, 'index']);
 //            }); # comments
-//        });
-//    }); # entity
+        });
+    }); # entity
 }); # games
