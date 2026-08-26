@@ -10,7 +10,7 @@ Route::group([], function () {
 Route::get('/', function () {
     $developers = \App\Models\Developer::latest()->limit(7)->get();
 
-    $games = \App\Models\Game::with('developer')->latest()->limit(7)->get();
+    $games = \App\Models\Game::with('developer')->whereDate('released_at', today())->latest()->limit(7)->get();
 
     $categories = \App\Models\Category::withCount([
         'games',

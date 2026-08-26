@@ -18,7 +18,15 @@ class DeveloperController extends Controller
 
     public function latest(Source $source)
     {
-        return view('web.developers.latest');
+        $q = Developer::query();
+
+        $developers = $q
+            ->whereSourceFor($source)
+            ->whereDate('created_at', today())
+            ->latest()
+            ->get();
+
+        return view('web.developers.latest', compact('source', 'developers'));
     }
 
     /**

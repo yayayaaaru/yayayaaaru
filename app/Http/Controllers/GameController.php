@@ -18,7 +18,16 @@ class GameController extends Controller
 
     public function latest(Source $source)
     {
-        return view('web.games.latest');
+        $q = Game::query();
+
+        $games = $q
+            ->with('developer')
+            ->whereSourceFor($source)
+            ->whereDate('released_at', today())
+            ->latest()
+            ->get();
+
+        return view('web.games.latest', compact('source', 'games'));
     }
 
     /**
