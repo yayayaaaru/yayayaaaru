@@ -3,7 +3,10 @@
 <div class="row row-cards justify-content-around">
     @foreach($games as $g)
         <div class="col-auto" style="max-width: 11rem;">
-            <a href="{{ sprintf('/games/%d/%s', $g->id, $g->slug) }}" class="d-flex flex-column">
+            <a
+                href="{{ route('games.show', [$g->id, $g->slug]) }}"
+                class="d-flex flex-column"
+            >
                 <div class="avatar" style="--tblr-avatar-size: 10rem; background-image: url('{{ asset('static/media/avatar/not-found.png') }}'); background-size: cover;"></div>
                 <div class="mt-2" style="min-height: 2.5rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
                     <strong>{{ $g->title }}</strong>

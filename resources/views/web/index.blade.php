@@ -1,9 +1,10 @@
+@php use App\Enums\SourceName as Source; @endphp
 @section('title', 'Главная')
 
 <x-layouts::main>
-{{--    <div class="container mt-4">--}}
-{{--        {{ Breadcrumbs::render('home') }}--}}
-{{--    </div>--}}
+    {{--    <div class="container mt-4">--}}
+    {{--        {{ Breadcrumbs::render('home') }}--}}
+    {{--    </div>--}}
     <div class="page-header">
         <div class="container">
             <div class="page-title">
@@ -30,12 +31,15 @@
         <div class="container">
             <div class="row">
                 <div class="col">
-                    <x-ui.subheadline label="Новые разработчики" href="/developers/yandexgames/latest">
+                    <x-ui.subheadline
+                        label="Новые разработчики"
+                        href="{{ route('developers.latest', Source::YANDEXGAMES) }}"
+                    >
                         <div class="card rounded-0 shadow-none">
                             <div class="list-group list-group-flush">
                                 @foreach($developers as $d)
                                     <a
-                                        href="{{ sprintf('/developers/%d/%s', $d->id, $d->slug) }}"
+                                        href="{{ route('developers.show', [$d->id, $d->slug]) }}"
                                         class="list-group-item list-group-item-action rounded-0"
                                     >
                                         {{ $d->name }}
@@ -46,12 +50,15 @@
                     </x-ui.subheadline>
                 </div>
                 <div class="col">
-                    <x-ui.subheadline label="Новые игры" href="/games/yandexgames/latest">
+                    <x-ui.subheadline
+                        label="Новые игры"
+                        href="{{ route('games.latest', Source::YANDEXGAMES) }}"
+                    >
                         <div class="card rounded-0 shadow-none">
                             <div class="list-group list-group-flush">
                                 @foreach($games as $g)
                                     <a
-                                        href="{{ sprintf('/games/%d/%s', $g->id, $g->slug) }}"
+                                        href="{{ route('games.show', [$g->id, $g->slug]) }}"
                                         class="list-group-item list-group-item-action d-flex justify-content-between align-items-center rounded-0"
                                     >
                                         {{ $g->title }}<br>
@@ -81,7 +88,10 @@
                     </x-ui.subheadline>
                 </div>
             </div>
-            <x-ui.subheadline label="Категории" href="/categories">
+            <x-ui.subheadline
+                label="Категории"
+                href="/categories"
+            >
                 <div class="card rounded-0 shadow-none">
                     <div class="list-group list-group-flush">
                         @foreach($categories as $c)
@@ -90,7 +100,10 @@
                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center rounded-0"
                             >
                                 {{ $c->title }}<br>
-                                <span class="text-azure" title="{{ $c->games_count }} игр(ы) в категории {{ $c->title }}">
+                                <span
+                                    class="text-azure"
+                                    title="{{ $c->games_count }} игр(ы) в категории {{ $c->title }}"
+                                >
                                     {{ $c->games_count }}
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -111,7 +124,7 @@
                                         <path d="M12 12l-8 -4.5"/>
                                     </svg>
                                     @if($period_games_count = $c->period_games_count)
-                                    <b class="text-success">+{{ $period_games_count }}</b>
+                                        <b class="text-success">+{{ $period_games_count }}</b>
                                     @endif
                                 </span>
                             </a>
@@ -124,7 +137,10 @@
                     </div>
                 </div>
             </x-ui.subheadline>
-            <x-ui.subheadline label="Теги" href="/tags">
+            <x-ui.subheadline
+                label="Теги"
+                href="/tags"
+            >
                 <div class="card rounded-0 shadow-none">
                     <div class="list-group list-group-flush">
                         @foreach($tags as $t)
@@ -154,7 +170,7 @@
                                         <path d="M12 12l-8 -4.5"/>
                                     </svg>
                                     @if($period_games_count = $t->period_games_count)
-                                    <b class="text-success">+{{ $period_games_count }}</b>
+                                        <b class="text-success">+{{ $period_games_count }}</b>
                                     @endif
                                 </span>
                             </a>

@@ -14,12 +14,12 @@
     </div>
     <div class="page-body">
         <div class="container">
-            <x-ui.subheadline label="Новые игры" href="/games/yandexgames/latest">
+            <x-ui.subheadline label="Новые игры">
                 <div class="card rounded-0 shadow-none">
                     <div class="list-group list-group-flush">
                         @foreach($games as $g)
                             <a
-                                href="{{ sprintf('/games/%d/%s', $g->id, $g->slug) }}"
+                                href="{{ route('games.show', [$g->id, $g->slug]) }}"
                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center rounded-0"
                             >
                                 {{ $g->title }}<br>

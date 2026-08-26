@@ -70,8 +70,8 @@
                             <input type="hidden" name="favoriteable[type]" value="{{ $developer::class }}" autocomplete="off">
                             <input type="hidden" name="favoriteable[id]" value="{{ $developer->id }}" autocomplete="off">
                             <button
-                                type="submit"
                                 @class(['justify-content-start', 'btn', 'mb-2', 'w-100', $is_favorite ? 'btn-warning' : 'btn-outline-warning'])
+                                type="submit"
                                 data-loading-text="Выполнение..."
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-star">

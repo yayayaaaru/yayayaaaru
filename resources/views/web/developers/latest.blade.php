@@ -19,7 +19,7 @@
                     <div class="list-group list-group-flush">
                         @foreach($developers as $d)
                             <a
-                                href="{{ sprintf('/developers/%d/%s', $d->id, $d->slug) }}"
+                                href="{{ route('developers.show', [$d->id, $d->slug])}}"
                                 class="list-group-item list-group-item-action rounded-0"
                             >
                                 {{ $d->name }}
