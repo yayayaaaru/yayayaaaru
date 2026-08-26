@@ -6,11 +6,18 @@ namespace App\Http\Controllers;
 
 use App\Enums\SourceName as Source;
 use App\Models\Game;
+use App\Services\HistoryService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class GameController extends Controller
 {
+    public function __construct(
+        public readonly HistoryService $historyService,
+    )
+    {
+    }
+
     public function showcase()
     {
         return view('web.games.showcase');
@@ -54,6 +61,24 @@ class GameController extends Controller
 
         $developer = $game->developer;
 
-        return view('web.games.card.index', compact('game', 'developer', 'source'));
+        $historyCisScore = $this->historyService->getFieldTimeline($game, 'cis_score');
+
+        $historyMinLoadTime = $this->historyService->getFieldTimeline($game, 'min_load_time_seconds');
+
+        $historyReviewsCount = $this->historyService->getFieldTimeline($game, 'reviews_count');
+        $historyReviewsScoresAvg = $this->historyService->getFieldTimeline($game, 'reviews_scores_avg');
+        $historyReviewsScoresStat = $this->historyService->getFieldTimeline($game, 'reviews_scores_stat');
+
+        $historyReviews = [
+            'count' => $historyReviewsCount,
+            'scores_avg' => $historyReviewsScoresAvg,
+            'scores_stat' => $historyReviewsScoresStat,
+        ];
+
+        // @todo какашка - переделать
+
+        return view('web.games.card.index', compact(
+            'game', 'developer', 'source', 'historyCisScore', 'historyMinLoadTime', 'historyReviews'
+        ));
     }
 }

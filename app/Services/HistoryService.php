@@ -19,8 +19,8 @@ class HistoryService
     {
         return $historable->histories()
             ->when($from, static fn($q) => $q->where('fetched_at', '>=', $from))
-            ->orderBy('fetched_at')
-            ->orderBy('id', 'desc')
+            ->orderByDesc('fetched_at')
+            ->orderByDesc('id')
             ->get(['data', 'fetched_at'])
             ->filter(static fn(History $h) => array_key_exists($field, $h->data))
             ->map(static fn(History $h) => [
