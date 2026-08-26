@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Builders\TagBuilder;
+use App\Http\Middleware\Contracts\HasRoutableSlug;
 use App\Models\Concerns\MorphsToSources;
 use App\Models\Concerns\Tags\HasTagRelationships;
 use Database\Factories\TagFactory;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 #[UseEloquentBuilder(TagBuilder::class)]
-class Tag extends Model
+class Tag extends Model implements HasRoutableSlug
 {
     /** @use HasFactory<TagFactory> */
     use HasFactory, HasTagRelationships, MorphsToSources;
@@ -39,5 +40,10 @@ class Tag extends Model
     {
         /** @var TagBuilder */
         return parent::query();
+    }
+
+    public function getRouteSlug(): string
+    {
+        return $this->slug;
     }
 }

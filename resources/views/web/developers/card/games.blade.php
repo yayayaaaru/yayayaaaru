@@ -8,7 +8,9 @@
 {{--    </div>--}}
     <div class="container">
         <x-developers-nav :developer="$developer">
-            <x-cards-game :games="$games"/>
+            <x-ui.subheadline label="Игры">
+                <x-cards-game :$games />
+            </x-ui.subheadline>
         </x-developers-nav>
     </div>
 </x-layouts::main>

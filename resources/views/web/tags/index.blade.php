@@ -7,7 +7,7 @@
 {{--        {{ Breadcrumbs::render('developers', $source) }}--}}
 {{--    </div>--}}
     <div class="page-header">
-        <div class="container">
+        <div class="container text-uppercase">
             <div class="page-title">Все теги</div>
             <div class="text-secondary">Игры по тегам: без скачивания, десктоп и бесплатные.</div>
         </div>
@@ -19,7 +19,7 @@
                     <div class="list-group list-group-flush">
                         @foreach($tags as $t)
                             <a
-                                href="{{ sprintf('/tags/%d/%s', $t->id, $t->slug) }}"
+                                href="{{ route('tags.show', [$t->id, $t->slug]) }}"
                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center rounded-0"
                             >
                                 {{ $t->title }}<br>

@@ -31,7 +31,7 @@ class GameController extends Controller
             ->with('developer')
             ->whereSourceFor($source)
             ->whereDate('released_at', today())
-            ->latest()
+            ->latest('released_at')
             ->get();
 
         return view('web.games.latest', compact('source', 'games'));
@@ -46,7 +46,8 @@ class GameController extends Controller
 
         $games = $q
             ->whereSourceFor($source)
-            ->orderByDesc('created_at')
+            ->orderByDesc('released_at')
+            ->orderByDesc('id')
             ->paginate(30);
 
         return view('web.games.index', compact('games', 'source'));

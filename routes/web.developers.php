@@ -14,7 +14,7 @@ Route::group(['prefix' => 'developers', 'as' => 'developers'], function () {
     })->whereIn('source', Source::cases());
     Route::group(['prefix' => '{developer}'], function () {
 //        Route::get('/', [DeveloperController::class, 'redirect'])->name('.redirect');
-        Route::group(['prefix' => '{slug}', 'middleware' => ['redirect.developerslug']], function () {
+        Route::group(['prefix' => '{slug}', 'middleware' => ['redirect.slug:developer']], function () {
             Route::get('/', [DeveloperController::class, 'show'])->name('.show');
             Route::get('/games', [DeveloperController::class, 'games'])->name('.games');
 //            Route::group(['prefix' => 'comments', 'as' => '.comments'], function () {

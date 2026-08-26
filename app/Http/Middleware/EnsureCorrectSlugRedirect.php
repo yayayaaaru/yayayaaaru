@@ -4,24 +4,23 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
-use App\Models\Game;
+use App\Http\Middleware\Contracts\HasRoutableSlug;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class GameEnsureCorrectRedirect
+class EnsureCorrectSlugRedirect
 {
     /**
      * Handle an incoming request.
      *
      * @param  Closure(Request): (Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, string $routeParam): Response
     {
-        /** @var ?Game $game */
-        $game = $request->route('game');
+        $model = $request->route($routeParam);
 
-        if ($game && $game->slug !== $request->slug) {
+        if ($model instanceof HasRoutableSlug && $model->getRouteSlug() !== $request->route('slug')) {
             return redirect()->back();
         }
 

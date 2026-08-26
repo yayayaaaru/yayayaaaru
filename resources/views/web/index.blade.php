@@ -96,7 +96,7 @@
                     <div class="list-group list-group-flush">
                         @foreach($categories as $c)
                             <a
-                                href="{{ sprintf('/categories/%d/%s', $c->id, $c->slug) }}"
+                                href="{{ route('categories.show', [$c->id, $c->slug]) }}"
                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center rounded-0"
                             >
                                 {{ $c->title }}<br>
@@ -145,7 +145,7 @@
                     <div class="list-group list-group-flush">
                         @foreach($tags as $t)
                             <a
-                                href="{{ sprintf('/tags/%d/%s', $t->id, $t->slug) }}"
+                                href="{{ route('tags.show', [$t->id, $t->slug]) }}"
                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center rounded-0"
                             >
                                 {{ $t->title }}<br>

@@ -7,7 +7,7 @@
 {{--        {{ Breadcrumbs::render('developers', $source) }}--}}
 {{--    </div>--}}
     <div class="page-header">
-        <div class="container">
+        <div class="container text-uppercase">
             <div class="page-title">Все категории</div>
             <div class="text-secondary">Все категории в одном месте: от свежих релизов до проверенной классики.</div>
         </div>
@@ -19,7 +19,7 @@
                     <div class="list-group list-group-flush">
                         @foreach($categories as $c)
                             <a
-                                href="{{ sprintf('/categories/%d/%s', $c->id, $c->slug) }}"
+                                href="{{ route('categories.show', [$c->id, $c->slug]) }}"
                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center rounded-0"
                             >
                                 {{ $c->title }}<br>

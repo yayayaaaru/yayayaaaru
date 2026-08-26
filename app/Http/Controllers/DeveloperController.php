@@ -23,7 +23,7 @@ class DeveloperController extends Controller
         $developers = $q
             ->whereSourceFor($source)
             ->whereDate('created_at', today())
-            ->latest()
+            ->latest('id')
             ->get();
 
         return view('web.developers.latest', compact('source', 'developers'));

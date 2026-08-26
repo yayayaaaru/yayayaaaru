@@ -30,4 +30,14 @@ class TagController extends Controller
 
         return view('web.tags.index', compact('tags'));
     }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Tag $tag)
+    {
+        $games = $tag->games()->paginate(30);
+
+        return view('web.tags.card.index', compact('tag', 'games'));
+    }
 }

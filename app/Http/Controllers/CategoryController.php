@@ -30,4 +30,14 @@ class CategoryController extends Controller
 
         return view('web.categories.index', compact('categories'));
     }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Category $category)
+    {
+        $games = $category->games()->paginate(30);
+
+        return view('web.categories.card.index', compact('category', 'games'));
+    }
 }

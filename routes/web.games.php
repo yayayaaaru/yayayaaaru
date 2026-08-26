@@ -14,7 +14,7 @@ Route::group(['prefix' => 'games', 'as' => 'games'], function () {
     })->whereIn('source', Source::cases());
     Route::group(['prefix' => '{game}'], function () {
 //        Route::get('/', [GameController::class, 'redirect'])->name('.redirect');
-        Route::group(['prefix' => '{slug}', 'middleware' => ['redirect.gameslug']], function () {
+        Route::group(['prefix' => '{slug}', 'middleware' => ['redirect.slug:game']], function () {
             Route::get('/', [GameController::class, 'show'])->name('.show');
 //            Route::group(['prefix' => 'votes', 'as' => '.votes', 'middleware' => ['auth']], function () {
 //                Route::get('/', [GameVoteController::class, 'index']);

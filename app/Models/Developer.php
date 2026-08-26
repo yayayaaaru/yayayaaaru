@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Builders\DeveloperBuilder;
+use App\Http\Middleware\Contracts\HasRoutableSlug;
 use App\Models\Concerns\Developers\HasDeveloperRelationships;
 use App\Models\Concerns\MorphsToHistories;
 use App\Models\Concerns\MorphsToSources;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 #[UseEloquentBuilder(DeveloperBuilder::class)]
-class Developer extends Model
+class Developer extends Model implements HasRoutableSlug
 {
     /** @use HasFactory<DeveloperFactory> */
     use HasFactory, HasDeveloperRelationships, MorphsToSources, MorphsToHistories;
@@ -51,5 +52,10 @@ class Developer extends Model
             'name',
             'synced_at',
         ];
+    }
+
+    public function getRouteSlug(): string
+    {
+        return $this->slug;
     }
 }
