@@ -33,7 +33,7 @@ class DeveloperController extends Controller
     {
         $source = $developer->sources->first(static fn($s) => $s->name === Source::YANDEXGAMES);
 
-        $games = $developer->games()->paginate(30);
+        $games = $developer->games()->orderByDesc('id')->paginate(30);
 
         return view('web.developers.card.games', compact('source', 'developer', 'games'));
     }

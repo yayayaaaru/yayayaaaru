@@ -45,6 +45,7 @@ class GameController extends Controller
         $q = Game::query();
 
         $games = $q
+            ->whereNotNull('synced_at')
             ->whereSourceFor($source)
             ->orderByDesc('released_at')
             ->orderByDesc('id')

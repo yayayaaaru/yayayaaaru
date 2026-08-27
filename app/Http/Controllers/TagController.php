@@ -36,7 +36,7 @@ class TagController extends Controller
      */
     public function show(Tag $tag)
     {
-        $games = $tag->games()->paginate(30);
+        $games = $tag->games()->orderByDesc('id')->paginate(30);
 
         return view('web.tags.card.index', compact('tag', 'games'));
     }

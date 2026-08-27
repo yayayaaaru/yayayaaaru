@@ -34,20 +34,20 @@ class GamesYandexGrabberCommend extends Command
     {
         $connector->query()->add('games_count', 24);
 
-        $syncedAt = now();
-
         Developer::query()
             ->with('sources')
             ->notSyncedFor('3 hours')
-            ->orderBy('id')
+            ->orderByDesc('id')
             ->chunkById(
                 self::CHUNK_SIZE,
-                function (Collection $developers) use ($connector, $syncedAt) {
+                function (Collection $developers) use ($connector) {
 
-                    $fetchedAt = now();
+                    $syncedAt = now();
 
                     /** @var Developer $developer */
                     foreach ($developers as $developer) {
+
+                        $fetchedAt = now();
 
                         $source = $developer->sources->first(
                             static fn(Source $source) => $source->name === SourceName::YANDEXGAMES

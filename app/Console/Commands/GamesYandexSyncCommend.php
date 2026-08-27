@@ -30,8 +30,6 @@ class GamesYandexSyncCommend extends Command
      */
     public function handle(YandexGamesConnector $connector): int
     {
-        $syncedAt = now();
-
         Game::query()
             ->with('sources')
             ->notSyncedFor('3 hours') // @todo
@@ -39,9 +37,9 @@ class GamesYandexSyncCommend extends Command
             ->orderBy('id')
             ->chunkById(
                 self::CHUNK_SIZE,
-                function (Collection $games) use ($connector, $syncedAt) {
+                function (Collection $games) use ($connector) {
 
-                    $fetchedAt = now();
+                    $syncedAt = now();
 
                     /** @var string[] $externalIds */
                     $externalIds = $games
@@ -53,7 +51,9 @@ class GamesYandexSyncCommend extends Command
                         )
                         ->all();
 
-                    $res = $connector->send(new GetGamesByIdsRequest($externalIds));
+                    $res = $connector->send(
+                        new GetGamesByIdsRequest($externalIds)
+                    );
 
                     if (! $res->ok()) {
                         return;
@@ -80,7 +80,7 @@ class GamesYandexSyncCommend extends Command
                                 )
                             )
                             ->first()
-                            ->withHistoryFetchedAt($fetchedAt)
+                            ->withHistoryFetchedAt($syncedAt)
                             ->update(['removed_at' => now()]);
                     }
 
@@ -89,7 +89,9 @@ class GamesYandexSyncCommend extends Command
 
                     $this->withProgressBar(
                         $payload->games,
-                        function (GameDto $gameDto) use ($games, $tags, $categories, $syncedAt, $fetchedAt) {
+                        function (GameDto $gameDto) use ($games, $tags, $categories, $syncedAt) {
+
+                            $fetchedAt = now();
 
                             /** @var Game|null $game */
                             $game = $games->first(
@@ -152,7 +154,9 @@ class GamesYandexSyncCommend extends Command
 
                             $game->timestamps = false;
 
-                            $game->update(['synced_at' => $syncedAt]);
+                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                                'synced_at' => $syncedAt,
+                            ]);
                         }
                     );
 

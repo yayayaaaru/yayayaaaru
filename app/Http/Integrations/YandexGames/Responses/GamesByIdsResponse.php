@@ -48,7 +48,7 @@ final readonly class GamesByIdsResponse implements Arrayable
                         $game['rating'],
                     ),
                     new Url($game['url']),
-                    $game['categoriesNames'],
+                    $game['categoriesNames'] ?? [],
                     $game['description'],
                     $game['instruction'],
                     $game['seoDescription'],
@@ -62,10 +62,10 @@ final readonly class GamesByIdsResponse implements Arrayable
                     Carbon::parse($game['firstPublished']),
                     $game['extraFeatures'], // @todo
                     $game['badge'],
-                    array_map(
+                    count($game['categoryIDs'] ?? []) !== count($game['categoriesNames'] ?? []) ? [] : array_map(
                         static fn(int $id, string $name): CategoryDto => new CategoryDto($id, $name),
-                        $game['categoryIDs'],
-                        $game['categoriesNames']
+                        $game['categoryIDs'] ?? [],
+                        $game['categoriesNames'] ?? [],
                     ),
                 )
             )

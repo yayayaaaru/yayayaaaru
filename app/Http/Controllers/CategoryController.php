@@ -36,7 +36,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        $games = $category->games()->paginate(30);
+        $games = $category->games()->orderByDesc('id')->paginate(30);
 
         return view('web.categories.card.index', compact('category', 'games'));
     }
