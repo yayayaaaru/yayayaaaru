@@ -24,6 +24,7 @@ class Developer extends Model implements HasRoutableSlug
         'name',
         'slug',
         'synced_at',
+        'removed_at',
     ];
 
     protected function casts(): array
@@ -36,6 +37,7 @@ class Developer extends Model implements HasRoutableSlug
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'synced_at' => 'datetime',
+            'removed_at' => 'datetime',
         ];
     }
 
@@ -51,6 +53,7 @@ class Developer extends Model implements HasRoutableSlug
         return [
             'name',
             'synced_at',
+            'removed_at',
         ];
     }
 

@@ -20,9 +20,10 @@ class CategoryController extends Controller
         $categories = $q
             ->withCount([
                 'games',
-                'games as period_games_count' => function ($query) {
-                    $query->whereDate('released_at', today());
-                },
+                'games as period_games_count' => fn($query) => $query->whereBetween('released_at', [
+                    today()->startOfDay(),
+                    today()->endOfDay(),
+                ]),
             ])
             ->orderByDesc('period_games_count')
             ->orderByDesc('games_count')

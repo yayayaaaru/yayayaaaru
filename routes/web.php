@@ -10,23 +10,35 @@ Route::group([], function () {
 });
 
 Route::get('/', function () {
-    $developers = \App\Models\Developer::whereDate('created_at', today())->latest('id')->limit(7)->get();
+    $ttl = now()->addHours(6);
 
-    $games = \App\Models\Game::with('developer')->whereDate('released_at', today())->latest('released_at')->limit(7)->get();
+    $developers = Cache::remember(cache_key('developers_today_latest_limit_7'), $ttl, function () {
+        return \App\Models\Developer::whereDate('created_at', today())->latest('id')->limit(7)->get()->toArray();
+    });
 
-    $categories = \App\Models\Category::withCount([
-        'games',
-        'games as period_games_count' => function ($query) {
-            $query->whereDate('released_at', today());
-        },
-    ])->orderByDesc('period_games_count')->orderByDesc('games_count')->limit(10)->get();
+    $games = Cache::remember(cache_key('games_today_latest_limit_7'), $ttl, function () {
+        return \App\Models\Game::with('developer')->whereDate('released_at', today())->latest('released_at')->limit(7)->get()->toArray();
+    });
 
-    $tags = \App\Models\Tag::withCount([
-        'games',
-        'games as period_games_count' => function ($query) {
-            $query->whereDate('released_at', today());
-        },
-    ])->orderByDesc('period_games_count')->orderByDesc('games_count')->limit(10)->get();
+    $categories = Cache::remember(cache_key('categories_today_limit_10'), $ttl, function () {
+        return \App\Models\Category::withCount([
+            'games',
+            'games as period_games_count' => static fn($query) => $query->whereBetween('released_at', [
+                today()->startOfDay(),
+                today()->endOfDay(),
+            ]),
+        ])->orderByDesc('period_games_count')->orderByDesc('games_count')->limit(10)->get()->toArray();
+    });
+
+    $tags = Cache::remember(cache_key('tags_today_limit_10'), $ttl, function () {
+        return \App\Models\Tag::withCount([
+            'games',
+            'games as period_games_count' => static fn($query) => $query->whereBetween('released_at', [
+                today()->startOfDay(),
+                today()->endOfDay(),
+            ]),
+        ])->orderByDesc('period_games_count')->orderByDesc('games_count')->limit(10)->get()->toArray();
+    });
 
     return view('web.index', compact('developers', 'games', 'categories', 'tags'));
 });

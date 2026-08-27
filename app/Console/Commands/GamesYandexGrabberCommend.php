@@ -74,6 +74,10 @@ class GamesYandexGrabberCommend extends Command
                                     $res->status(),
                                 ));
 
+                                $developer->withHistoryFetchedAt($fetchedAt)->update([
+                                    'removed_at' => now(),
+                                ]);
+
                                 break;
                             }
 

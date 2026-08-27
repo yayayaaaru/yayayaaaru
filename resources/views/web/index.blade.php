@@ -39,12 +39,17 @@
                             <div class="list-group list-group-flush">
                                 @foreach($developers as $d)
                                     <a
-                                        href="{{ route('developers.show', [$d->id, $d->slug]) }}"
+                                        href="{{ route('developers.show', [$d['id'], $d['slug']]) }}"
                                         class="list-group-item list-group-item-action rounded-0"
                                     >
-                                        {{ $d->name }}
+                                        {{ $d['name'] }}
                                     </a>
                                 @endforeach
+                                @for($i = count($developers); $i < 7; $i++)
+                                    <div class="list-group-item rounded-0 text-center disabled">
+                                        &nbsp;
+                                    </div>
+                                @endfor
                             </div>
                         </div>
                     </x-ui.subheadline>
@@ -58,12 +63,12 @@
                             <div class="list-group list-group-flush">
                                 @foreach($games as $g)
                                     <a
-                                        href="{{ route('games.show', [$g->id, $g->slug]) }}"
+                                        href="{{ route('games.show', [$g['id'], $g['slug']]) }}"
                                         class="list-group-item list-group-item-action d-flex justify-content-between align-items-center rounded-0"
                                     >
-                                        {{ $g->title }}<br>
+                                        {{ $g['title'] }}<br>
                                         <span class="text-azure" title="Разработчик">
-                                            {{ $g->developer->name }}
+                                            {{ $g['developer']['name'] }}
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 width="24"
@@ -83,6 +88,11 @@
                                         </span>
                                     </a>
                                 @endforeach
+                                @for($i = count($games); $i < 7; $i++)
+                                    <div class="list-group-item rounded-0 text-center disabled">
+                                        &nbsp;
+                                    </div>
+                                @endfor
                             </div>
                         </div>
                     </x-ui.subheadline>
@@ -96,15 +106,15 @@
                     <div class="list-group list-group-flush">
                         @foreach($categories as $c)
                             <a
-                                href="{{ route('categories.show', [$c->id, $c->slug]) }}"
+                                href="{{ route('categories.show', [$c['id'], $c['slug']]) }}"
                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center rounded-0"
                             >
-                                {{ $c->title }}<br>
+                                {{ $c['title'] }}<br>
                                 <span
                                     class="text-azure"
-                                    title="{{ $c->games_count }} игр(ы) в категории {{ $c->title }}"
+                                    title="{{ $c['games_count'] }} игр(ы) в категории {{ $c['title'] }}"
                                 >
-                                    {{ $c->games_count }}
+                                    {{ $c['games_count'] }}
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="24"
@@ -123,7 +133,7 @@
                                         <path d="M12 12l0 9"/>
                                         <path d="M12 12l-8 -4.5"/>
                                     </svg>
-                                    @if($period_games_count = $c->period_games_count)
+                                    @if($period_games_count = $c['period_games_count'])
                                         <b class="text-success">+{{ $period_games_count }}</b>
                                     @endif
                                 </span>
@@ -145,12 +155,12 @@
                     <div class="list-group list-group-flush">
                         @foreach($tags as $t)
                             <a
-                                href="{{ route('tags.show', [$t->id, $t->slug]) }}"
+                                href="{{ route('tags.show', [$t['id'], $t['slug']]) }}"
                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center rounded-0"
                             >
-                                {{ $t->title }}<br>
-                                <span class="text-azure" title="{{ $t->games_count }} игр(ы) тегом {{ $t->title }}">
-                                    {{ $t->games_count }}
+                                {{ $t['title'] }}<br>
+                                <span class="text-azure" title="{{ $t['games_count'] }} игр(ы) тегом {{ $t['title'] }}">
+                                    {{ $t['games_count'] }}
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="24"
@@ -169,7 +179,7 @@
                                         <path d="M12 12l0 9"/>
                                         <path d="M12 12l-8 -4.5"/>
                                     </svg>
-                                    @if($period_games_count = $t->period_games_count)
+                                    @if($period_games_count = $t['period_games_count'])
                                         <b class="text-success">+{{ $period_games_count }}</b>
                                     @endif
                                 </span>
