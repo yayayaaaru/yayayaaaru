@@ -8,12 +8,26 @@ use App\Enums\SourceName as Source;
 use App\Models\Developer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class DeveloperController extends Controller
 {
     public function showcase()
     {
-        return view('web.developers.showcase');
+        $ttl = now()->addHours(6);
+
+        /** @var array $stats */
+        $stats = Cache::remember(cache_key('developers_showcase'), $ttl, function () {
+            $stats = [];
+
+            foreach (Source::cases() as $source) {
+                $stats[$source->value] = Developer::whereSourceFor($source)->count();
+            }
+
+            return $stats;
+        });
+
+        return view('web.developers.showcase', compact('stats'));
     }
 
     public function latest(Source $source)

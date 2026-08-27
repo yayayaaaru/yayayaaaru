@@ -36,8 +36,9 @@ class GamesYandexGrabberCommend extends Command
 
         Developer::query()
             ->with('sources')
-            ->notSyncedFor('3 hours')
-            ->orderByDesc('id')
+            ->notSyncedFor('3 hours') // @todo
+            ->whereNull('removed_at')
+            ->orderBy('id')
             ->chunkById(
                 self::CHUNK_SIZE,
                 function (Collection $developers) use ($connector) {

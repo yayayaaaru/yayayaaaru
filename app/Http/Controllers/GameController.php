@@ -9,6 +9,7 @@ use App\Models\Game;
 use App\Services\HistoryService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class GameController extends Controller
 {
@@ -20,7 +21,20 @@ class GameController extends Controller
 
     public function showcase()
     {
-        return view('web.games.showcase');
+        $ttl = now()->addHours(6);
+
+        /** @var array $stats */
+        $stats = Cache::remember(cache_key('games_showcase'), $ttl, function () {
+            $stats = [];
+
+            foreach (Source::cases() as $source) {
+                $stats[$source->value] = Game::whereSourceFor($source)->count();
+            }
+
+            return $stats;
+        });
+
+        return view('web.games.showcase', compact('stats'));
     }
 
     public function latest(Source $source)
@@ -62,6 +76,8 @@ class GameController extends Controller
         $source = $game->sources->first(static fn($s) => $s->name === Source::YANDEXGAMES);
 
         $developer = $game->developer;
+        $categories = $game->categories;
+        $tags = $game->tags;
 
         $historyCisScore = $this->historyService->getFieldTimeline($game, 'cis_score');
 
@@ -79,8 +95,15 @@ class GameController extends Controller
 
         // @todo какашка - переделать
 
-        return view('web.games.card.index', compact(
-            'game', 'developer', 'source', 'historyCisScore', 'historyMinLoadTime', 'historyReviews'
-        ));
+        return view('web.games.card.index', compact([
+            'game',
+            'developer',
+            'source',
+            'historyCisScore',
+            'historyMinLoadTime',
+            'historyReviews',
+            'categories',
+            'tags',
+        ]));
     }
 }

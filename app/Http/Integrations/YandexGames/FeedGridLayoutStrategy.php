@@ -60,8 +60,6 @@ final readonly class FeedGridLayoutStrategy implements FeedStrategy
                             ),
                             collect($widget['data']['media']['videos'])->map(
                                 static fn(array $video) => new VideoDto(
-                                    new Url($video['thumbnailUrl']),
-                                    new Url($video['thumbnailUrlPrefix']),
                                     new Url($video['previewUrl']),
                                     new Url($video['mp4StreamUrl']),
                                     new VideoDimensions(

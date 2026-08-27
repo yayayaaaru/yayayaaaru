@@ -1,4 +1,13 @@
-@props(['game', 'developer', 'source'])
+@props([
+    'game',
+    'developer',
+    'source',
+    'historyCisScore',
+    'historyMinLoadTime',
+    'historyReviews',
+    'categories',
+    'tags',
+])
 
 @section('title', sprintf('%s (%d) от %s', $game->title, $game->released_at->year, $source->name->label()))
 
@@ -101,9 +110,20 @@
                         </div>
                     </div>
                     <div class="mt-auto">
-                        <div class="d-flex">
-                            <a href="#" class="btn btn-primary p-3 w-100 disabled">
-                                <svg
+                        <div class="d-flex" title="Удалена {{ $game->removed_at->ago() }}">
+                            <a
+                                href="#"
+                                @class([
+                                    'btn',
+                                    'btn-primary' => is_null($game->removed_at),
+                                    'btn-danger' => !is_null($game->removed_at),
+                                    'w-100',
+                                    'p-3',
+                                    'disabled'
+                                ])
+                            >
+                                @if(is_null($game->removed_at))
+                                    <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="24"
                                     height="24"
@@ -114,6 +134,27 @@
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                     <path d="M6 4v16a1 1 0 0 0 1.524 .852l13 -8a1 1 0 0 0 0 -1.704l-13 -8a1 1 0 0 0 -1.524 .852z"/>
                                 </svg>
+                                @else
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="icon icon-tabler icons-tabler-outline icon-tabler-trash"
+                                    >
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                        <path d="M4 7l16 0"/>
+                                        <path d="M10 11l0 6"/>
+                                        <path d="M14 11l0 6"/>
+                                        <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/>
+                                        <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/>
+                                    </svg>
+                                @endif
                             </a>
                             @auth
                                 <a
@@ -189,6 +230,37 @@
                     </div>
                 </div>
             </div>
+
+            <x-ui.subheadline label="Категории" class="blue mt-3">
+                <div class="row row-cols-auto g-2">
+                    @foreach($categories as $c)
+                        <div class="col">
+                            <a
+                                href="{{ route('categories.show', [$c->id, $c->slug]) }}"
+                                class="badge link-blue bg-azure-lt text-uppercase rounded-0 p-2 text-decoration-none"
+                            >
+                                {{ $c->title }}
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            </x-ui.subheadline>
+
+            <x-ui.subheadline label="Теги" class="orange mt-3">
+                <div class="row row-cols-auto g-2">
+                    @foreach($tags as $t)
+                        <div class="col">
+                            <a
+                                href="{{ route('tags.show', [$t->id, $t->slug]) }}"
+                                class="badge link-yellow bg-orange-lt text-uppercase rounded-0 p-2 text-decoration-none"
+                            >
+                                {{ $t->title }}
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            </x-ui.subheadline>
+
             <x-games-nav :game="$game">
                 <x-ui.subheadline label="Описание">
                     <x-ui.card>
