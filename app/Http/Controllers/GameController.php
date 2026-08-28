@@ -73,6 +73,9 @@ class GameController extends Controller
      */
     public function show(Game $game)
     {
+        views($game)->cooldown((int)config('viewable.cooldown_minutes'))->record();
+        $views_count = views($game)->count(); // @todo
+
         $source = $game->sources->first(static fn($s) => $s->name === Source::YANDEXGAMES);
 
         $developer = $game->developer;
@@ -105,6 +108,7 @@ class GameController extends Controller
             'historyReviews',
             'categories',
             'tags',
+            'views_count',
         ]));
     }
 }

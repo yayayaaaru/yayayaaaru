@@ -1,4 +1,4 @@
-@props(['developer', 'source'])
+@props(['developer', 'source', 'views_count'])
 
 @section('title', sprintf('Разработчик — %s, %s', $developer->name, ($sourceName = $source->name->label())))
 
@@ -148,23 +148,17 @@
                 <div class="row row-cards">
                     <div class="col-md-4">
                         <x-ui.subheadline label="Страницу посетили">
-                            <x-ui.card>
-                                0 раза
-                            </x-ui.card>
+                            <x-ui.card>{{ $views_count }} раз(а)</x-ui.card>
                         </x-ui.subheadline>
                     </div>
                     <div class="col-md-4">
                         <x-ui.subheadline label="Добавили в избранное">
-                            <x-ui.card>
-                                0 пользователя
-                            </x-ui.card>
+                            <x-ui.card>0 пользователя</x-ui.card>
                         </x-ui.subheadline>
                     </div>
                     <div class="col-md-4">
                         <x-ui.subheadline label="Голосов за всё время">
-                            <x-ui.card>
-                                0 голоса
-                            </x-ui.card>
+                            <x-ui.card>0 голоса</x-ui.card>
                         </x-ui.subheadline>
                     </div>
                 </div>

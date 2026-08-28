@@ -72,8 +72,11 @@ class DeveloperController extends Controller
      */
     public function show(Developer $developer)
     {
+        views($developer)->cooldown((int)config('viewable.cooldown_minutes'))->record();
+        $views_count = views($developer)->count(); // @todo
+
         $source = $developer->sources->first(static fn($s) => $s->name === Source::YANDEXGAMES);
 
-        return view('web.developers.card.index', compact('developer', 'source'));
+        return view('web.developers.card.index', compact('developer', 'source', 'views_count'));
     }
 }

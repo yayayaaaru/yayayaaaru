@@ -37,6 +37,9 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
+        views($category)->cooldown((int)config('viewable.cooldown_minutes'))->record();
+        $views_count = views($category)->count(); // @todo
+
         $games = $category->games()->orderByDesc('id')->paginate(30);
 
         return view('web.categories.card.index', compact('category', 'games'));
