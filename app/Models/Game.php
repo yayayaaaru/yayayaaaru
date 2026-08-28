@@ -9,13 +9,14 @@ use App\Http\Middleware\Contracts\HasRoutableSlug;
 use App\Models\Concerns\Games\HasGameRelationships;
 use App\Models\Concerns\MorphsToHistories;
 use App\Models\Concerns\MorphsToSources;
+use App\Models\Contracts\Historable;
 use Database\Factories\GameFactory;
 use Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 #[UseEloquentBuilder(GameBuilder::class)]
-class Game extends Model implements HasRoutableSlug
+class Game extends Model implements HasRoutableSlug, Historable
 {
     /** @use HasFactory<GameFactory> */
     use HasFactory, HasGameRelationships, MorphsToSources, MorphsToHistories;
