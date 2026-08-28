@@ -149,16 +149,15 @@
                                 'disabled' => $source !== Sources::YANDEXGAMES,
                                 'active' => request()->routeIs('games') && request()->route('provider') === $source
                             ])
-                               href="/games/yandexgames"
+                               href="{{ route('games', $source) }}"
                             >
                                 {{ $source->label() }}
                             </a>
                         @endforeach
                         <div class="dropdown-divider"></div>
-                        <a @class([
-                            'dropdown-item', 'active' => request()->routeIs('games.showcase')
-                        ])
-                           href="/games"
+                        <a
+                            @class(['dropdown-item', 'active' => request()->routeIs('games.showcase')])
+                            href="{{ route('games.showcase') }}"
                         >
                             Витрина
                         </a>
@@ -200,7 +199,7 @@
                                 'disabled' => $source !== Sources::YANDEXGAMES,
                                 'active' => request()->routeIs('developers') && request()->route('provider') === $source
                             ])
-                               href="/developers/yandexgames"
+                               href="{{ route('developers', $source) }}"
                             >
                                 {{ $source->label() }}
                             </a>
@@ -210,7 +209,7 @@
                             'dropdown-item',
                             'active' => request()->routeIs('developers.showcase')
                         ])
-                           href="/developers"
+                           href="{{ route('developers.showcase') }}"
                         >
                             Витрина
                         </a>

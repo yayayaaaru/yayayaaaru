@@ -21,7 +21,7 @@ class DeveloperController extends Controller
             $stats = [];
 
             foreach (Source::cases() as $source) {
-                $stats[$source->value] = Developer::whereSourceFor($source)->count();
+                $stats[$source->value] = Developer::whereHasSourceNamed($source)->count();
             }
 
             return $stats;
@@ -35,7 +35,7 @@ class DeveloperController extends Controller
         $q = Developer::query();
 
         $developers = $q
-            ->whereSourceFor($source)
+            ->whereHasSourceNamed($source)
             ->whereDate('created_at', today())
             ->latest('id')
             ->get();
@@ -60,7 +60,7 @@ class DeveloperController extends Controller
         $q = Developer::query();
 
         $developers = $q
-            ->whereSourceFor($source)
+            ->whereHasSourceNamed($source)
             ->orderByDesc('created_at')
             ->paginate(30);
 

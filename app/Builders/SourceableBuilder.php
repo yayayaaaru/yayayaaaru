@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Builders;
 
 use App\DTOs\SourceDto;
+use App\Enums\SourceName as Source;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -22,6 +23,7 @@ abstract class SourceableBuilder extends Builder
         $sources = $this->toCollection($sources);
 
         if ($sources->isEmpty()) {
+            // нет источников — гарантированно пустой результат
             return $this->whereRaw('1 = 0');
         }
 
@@ -31,6 +33,10 @@ abstract class SourceableBuilder extends Builder
         );
     }
 
+    /**
+     * @param iterable<SourceDto> $sources
+     * @param array<Source> $allowedNames
+     */
     public function whereHasSourcesByNames(iterable $sources, array $allowedNames): self
     {
         $sources = $this->toCollection($sources)
@@ -43,6 +49,14 @@ abstract class SourceableBuilder extends Builder
             );
 
         return $this->whereHasSources($sources);
+    }
+
+    public function whereHasSourceNamed(Source $source): self
+    {
+        return $this->whereHas(
+            $this->sourcesRelationName(),
+            static fn (Builder $query) => $query->where('name', $source->value),
+        );
     }
 
     private function applySourcesMatch(Builder $query, Collection $sources): void
@@ -58,9 +72,9 @@ abstract class SourceableBuilder extends Builder
         );
     }
 
-    private function matchSource(Builder $query, SourceDto $source): Builder
+    private function matchSource(Builder $query, SourceDto $source): void
     {
-        return $query
+        $query
             ->where('name', $source->name->value)
             ->where('external_id', $source->externalId);
     }

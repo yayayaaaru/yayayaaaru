@@ -218,7 +218,7 @@
                                                 'justify-content-between' => auth()->check(),
                                                 'justify-content-center' => !auth()->check(),
                                             ])
-                                     />
+                                        />
                                     @endif
                                 @else
                                     <div class="text-center mx-lg-0 my-3">

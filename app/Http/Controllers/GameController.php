@@ -28,7 +28,7 @@ class GameController extends Controller
             $stats = [];
 
             foreach (Source::cases() as $source) {
-                $stats[$source->value] = Game::whereSourceFor($source)->count();
+                $stats[$source->value] = Game::whereHasSourceNamed($source)->count();
             }
 
             return $stats;
@@ -43,7 +43,7 @@ class GameController extends Controller
 
         $games = $q
             ->with('developer')
-            ->whereSourceFor($source)
+            ->whereHasSourceNamed($source)
             ->whereDate('released_at', today())
             ->latest('released_at')
             ->get();
@@ -60,7 +60,7 @@ class GameController extends Controller
 
         $games = $q
             ->whereNotNull('synced_at')
-            ->whereSourceFor($source)
+            ->whereHasSourceNamed($source)
             ->orderByDesc('released_at')
             ->orderByDesc('id')
             ->paginate(30);
