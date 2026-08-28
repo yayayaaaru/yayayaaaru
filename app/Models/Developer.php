@@ -53,8 +53,6 @@ class Developer extends Model implements HasRoutableSlug, Historable
     {
         return [
             'name',
-            'synced_at',
-            'removed_at',
         ];
     }
 

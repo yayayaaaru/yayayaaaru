@@ -23,7 +23,7 @@ use Illuminate\Support\Collection;
 #[Description('Command description')]
 class GamesYandexSyncCommend extends Command
 {
-    private const int CHUNK_SIZE = 24;
+    private const int CHUNK_SIZE = 100;
 
     /**
      * Execute the console command.
@@ -72,20 +72,15 @@ class GamesYandexSyncCommend extends Command
 
                         $removedAt = now();
 
-                        foreach ($deletedIds as $deletedId) {
-
-                            $targetSource = new SourceDto(
-                                SourceName::YANDEXGAMES,
-                                $deletedId,
-                            );
-
-                            Game::query()
-                                ->whereNull('removed_at')
-                                ->whereHasSources([$targetSource])
-                                ->first()
-                                ->withHistoryFetchedAt($syncedAt)
-                                ->update(['removed_at' => $removedAt]);
-                        }
+                        Game::query()
+                            ->whereNull('removed_at')
+                            ->whereHasSources($deletedIds->map(
+                                static fn(string $externalId) => new SourceDto(
+                                    SourceName::YANDEXGAMES,
+                                    $externalId,
+                                )
+                            ))
+                            ->update(['removed_at' => $removedAt]);
                     }
 
                     $tags = $this->taxonomyByTags($payload);
@@ -158,7 +153,7 @@ class GamesYandexSyncCommend extends Command
 
                             $game->timestamps = false;
 
-                            $game->withHistoryFetchedAt($fetchedAt)->update([
+                            $game->update([
                                 'synced_at' => $syncedAt,
                             ]);
                         }

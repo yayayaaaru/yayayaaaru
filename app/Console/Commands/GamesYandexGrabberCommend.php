@@ -62,10 +62,29 @@ class GamesYandexGrabberCommend extends Command
                         {
                             $externalId = (int)$source->external_id;
 
+                            $res = $connector->send(
+                                new GetGamesByDeveloperRequest($externalId)
+                            );
+
+                            if (! $res->ok()) {
+                                $format = ' 0/0 | developer EID: %d | status CODE: %d';
+
+                                $this->error(sprintf(
+                                    $format,
+                                    $externalId,
+                                    $res->status(),
+                                ));
+
+                                $developer->update([
+                                    'removed_at' => now(),
+                                ]);
+
+                                break;
+                            }
+
                             try {
-                                $res = $connector->send(
-                                    new GetGamesByDeveloperRequest($externalId)
-                                );
+                                /** @var GamesByDeveloperResponse $payload */
+                                $payload = $res->dto();
                             } catch (\Exception $e) {
                                 $format = ' 0/0 | developer EID: %d | ex. message: %s';
 
@@ -77,25 +96,6 @@ class GamesYandexGrabberCommend extends Command
 
                                 break;
                             }
-
-                            if (! $res->ok()) {
-                                $format = ' 0/0 | developer EID: %d | status CODE: %d';
-
-                                $this->error(sprintf(
-                                    $format,
-                                    $externalId,
-                                    $res->status(),
-                                ));
-
-                                $developer->withHistoryFetchedAt($fetchedAt)->update([
-                                    'removed_at' => now(),
-                                ]);
-
-                                break;
-                            }
-
-                            /** @var GamesByDeveloperResponse $payload */
-                            $payload = $res->dto();
 
                             $feed = $payload->feed;
                             $pageInfoDto = $payload->pageInfo;
@@ -177,9 +177,9 @@ class GamesYandexGrabberCommend extends Command
 
                         $developer->timestamps = false;
 
-                        $developer->withHistoryFetchedAt($fetchedAt)->update([
+                        $developer->update([
                             'synced_at' => $syncedAt,
-                        ]); // @todo
+                        ]);
                     }
                 },
                 column: 'id'
