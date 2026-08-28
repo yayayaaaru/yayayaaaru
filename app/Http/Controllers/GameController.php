@@ -79,21 +79,22 @@ class GameController extends Controller
         $categories = $game->categories;
         $tags = $game->tags;
 
-        $historyCisScore = $this->historyService->getFieldTimeline($game, 'cis_score');
+        $timelines = $this->historyService->getFieldsTimeline($game, [
+            'cis_score',
+            'min_load_time_seconds',
+            'reviews_count',
+            'reviews_scores_avg',
+            'reviews_scores_stat',
+        ]);
 
-        $historyMinLoadTime = $this->historyService->getFieldTimeline($game, 'min_load_time_seconds');
-
-        $historyReviewsCount = $this->historyService->getFieldTimeline($game, 'reviews_count');
-        $historyReviewsScoresAvg = $this->historyService->getFieldTimeline($game, 'reviews_scores_avg');
-        $historyReviewsScoresStat = $this->historyService->getFieldTimeline($game, 'reviews_scores_stat');
+        $historyCisScore = $timelines->get('cis_score');
+        $historyMinLoadTime = $timelines->get('min_load_time_seconds');
 
         $historyReviews = [
-            'count' => $historyReviewsCount,
-            'scores_avg' => $historyReviewsScoresAvg,
-            'scores_stat' => $historyReviewsScoresStat,
+            'count' => $timelines->get('reviews_count'),
+            'scores_avg' => $timelines->get('reviews_scores_avg'),
+            'scores_stat' => $timelines->get('reviews_scores_stat'),
         ];
-
-        // @todo какашка - переделать
 
         return view('web.games.card.index', compact([
             'game',

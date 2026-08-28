@@ -8,5 +8,6 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 interface Historable
 {
+    public function historizedAttributes(): array;
     public function histories(): MorphMany;
 }

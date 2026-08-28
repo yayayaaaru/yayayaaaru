@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\Developer;
 use App\Models\Game;
 use App\Models\Tag;
+use App\Repositories\HistoryRepository;
+use App\Repositories\Contracts\HistoryRepository as HistoryRepositoryContract;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
@@ -16,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(HistoryRepositoryContract::class, HistoryRepository::class);
     }
 
     /**
