@@ -23,15 +23,13 @@ use Illuminate\Support\Collection;
 #[Description('Command description')]
 class GamesYandexSyncCommend extends Command
 {
-    private const int CHUNK_SIZE = 24;
+    private const int CHUNK_SIZE = 100;
 
     /**
      * Execute the console command.
      */
     public function handle(YandexGamesConnector $connector): int
     {
-        $syncedAt = now();
-
         Game::query()
             ->with('sources')
             ->notSyncedFor('3 hours') // @todo
@@ -39,9 +37,9 @@ class GamesYandexSyncCommend extends Command
             ->orderBy('id')
             ->chunkById(
                 self::CHUNK_SIZE,
-                function (Collection $games) use ($connector, $syncedAt) {
+                function (Collection $games) use ($connector) {
 
-                    $fetchedAt = now();
+                    $syncedAt = now();
 
                     /** @var string[] $externalIds */
                     $externalIds = $games
@@ -53,7 +51,9 @@ class GamesYandexSyncCommend extends Command
                         )
                         ->all();
 
-                    $res = $connector->send(new GetGamesByIdsRequest($externalIds));
+                    $res = $connector->send(
+                        new GetGamesByIdsRequest($externalIds)
+                    );
 
                     if (! $res->ok()) {
                         return;
@@ -69,19 +69,18 @@ class GamesYandexSyncCommend extends Command
                     );
 
                     if ($deletedIds->isNotEmpty()) {
+
+                        $removedAt = now();
+
                         Game::query()
                             ->whereNull('removed_at')
-                            ->whereHasSources(
-                                $deletedIds->map(
-                                    static fn(string $externalId) => new SourceDto(
-                                        SourceName::YANDEXGAMES,
-                                        $externalId,
-                                    )
+                            ->whereHasSources($deletedIds->map(
+                                static fn(string $externalId) => new SourceDto(
+                                    SourceName::YANDEXGAMES,
+                                    $externalId,
                                 )
-                            )
-                            ->first()
-                            ->withHistoryFetchedAt($fetchedAt)
-                            ->update(['removed_at' => now()]);
+                            ))
+                            ->update(['removed_at' => $removedAt]);
                     }
 
                     $tags = $this->taxonomyByTags($payload);
@@ -89,7 +88,9 @@ class GamesYandexSyncCommend extends Command
 
                     $this->withProgressBar(
                         $payload->games,
-                        function (GameDto $gameDto) use ($games, $tags, $categories, $syncedAt, $fetchedAt) {
+                        function (GameDto $gameDto) use ($games, $tags, $categories, $syncedAt) {
+
+                            $fetchedAt = now();
 
                             /** @var Game|null $game */
                             $game = $games->first(
@@ -152,7 +153,9 @@ class GamesYandexSyncCommend extends Command
 
                             $game->timestamps = false;
 
-                            $game->update(['synced_at' => $syncedAt]);
+                            $game->update([
+                                'synced_at' => $syncedAt,
+                            ]);
                         }
                     );
 

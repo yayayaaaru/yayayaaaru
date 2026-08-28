@@ -32,22 +32,23 @@ class GamesYandexGrabberCommend extends Command
      */
     public function handle(YandexGamesConnector $connector): int
     {
-        $connector->query()->add('games_count', 24);
-
-        $syncedAt = now();
+        $connector->query()->add('games_count', 100);
 
         Developer::query()
             ->with('sources')
-            ->notSyncedFor('3 hours')
-            ->orderBy('id')
+            ->notSyncedFor('3 hours') // @todo
+            ->whereNull('removed_at')
+            ->orderByDesc('id')
             ->chunkById(
                 self::CHUNK_SIZE,
-                function (Collection $developers) use ($connector, $syncedAt) {
+                function (Collection $developers) use ($connector) {
 
-                    $fetchedAt = now();
+                    $syncedAt = now();
 
                     /** @var Developer $developer */
                     foreach ($developers as $developer) {
+
+                        $fetchedAt = now();
 
                         $source = $developer->sources->first(
                             static fn(Source $source) => $source->name === SourceName::YANDEXGAMES
@@ -74,11 +75,27 @@ class GamesYandexGrabberCommend extends Command
                                     $res->status(),
                                 ));
 
+                                $developer->update([
+                                    'removed_at' => now(),
+                                ]);
+
                                 break;
                             }
 
-                            /** @var GamesByDeveloperResponse $payload */
-                            $payload = $res->dto();
+                            try {
+                                /** @var GamesByDeveloperResponse $payload */
+                                $payload = $res->dto();
+                            } catch (\Exception $e) {
+                                $format = ' 0/0 | developer EID: %d | ex. message: %s';
+
+                                $this->error(sprintf(
+                                    $format,
+                                    $externalId,
+                                    $e->getMessage(),
+                                ));
+
+                                break;
+                            }
 
                             $feed = $payload->feed;
                             $pageInfoDto = $payload->pageInfo;
@@ -160,9 +177,9 @@ class GamesYandexGrabberCommend extends Command
 
                         $developer->timestamps = false;
 
-                        $developer->withHistoryFetchedAt($fetchedAt)->update([
+                        $developer->update([
                             'synced_at' => $syncedAt,
-                        ]); // @todo
+                        ]);
                     }
                 },
                 column: 'id'

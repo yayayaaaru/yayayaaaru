@@ -34,6 +34,10 @@ final readonly class GamesByDeveloperResponse implements Arrayable
     {
         $json = $response->json();
 
+        if (! isset($json['feed'])) {
+            throw new \Exception('Feed is be empty.');
+        }
+
         /** @var array $feed */
         $feed = $json['feed'];
         /** @var array $pageInfo */

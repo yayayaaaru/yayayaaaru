@@ -37,10 +37,10 @@ final readonly class FeedFoundStrategy implements FeedStrategy
                     $item['rating'],
                 ),
                 $item['tagIDs'],
-                $item['categoryNames'],
+                $item['categoryNames'] ?? [],
                 new FeaturesDto(
                     new AgeRating($item['features']['age_rating']),
-                    $item['features']['user_data_required'],
+                    $item['features']['user_data_required'] ?? false,
                 ),
                 $item['type'],
                 new GridPositionDto(
@@ -48,10 +48,10 @@ final readonly class FeedFoundStrategy implements FeedStrategy
                     $item['row'],
                 ),
                 $item['requestId'],
-                array_map(
+                count($item['categoryIDs'] ?? []) !== count($item['categoryNames'] ?? []) ? [] : array_map(
                     static fn(int $id, string $title): CategoryDto => new CategoryDto($id, $title),
-                    $item['categoryIDs'],
-                    $item['categoryNames']
+                    $item['categoryIDs'] ?? [],
+                    $item['categoryNames'] ?? [],
                 ),
             ))->toArray(),
             $context['isFromFirstPage'],

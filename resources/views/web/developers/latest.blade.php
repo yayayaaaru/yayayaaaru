@@ -1,0 +1,33 @@
+@props(['developers', 'source'])
+
+@section('title', sprintf('%s — новые за сегодня, Разработчики', $source->name))
+
+<x-layouts::main>
+    {{--    <div class="container mt-4">--}}
+    {{--        {{ Breadcrumbs::render('developers.showcase') }}--}}
+    {{--    </div>--}}
+    <div class="page-header">
+        <div class="container text-uppercase">
+            <div class="page-title">{{ $source->label() }}</div>
+            <div class="text-muted">Свежие студии, которые только что добавили свои игры на платформу.</div>
+        </div>
+    </div>
+    <div class="page-body">
+        <div class="container">
+            <x-ui.subheadline label="Новые разработчики">
+                <div class="card rounded-0 shadow-none">
+                    <div class="list-group list-group-flush">
+                        @foreach($developers as $d)
+                            <a
+                                href="{{ route('developers.show', [$d->id, $d->slug])}}"
+                                class="list-group-item list-group-item-action rounded-0"
+                            >
+                                {{ $d->name }}
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            </x-ui.subheadline>
+        </div>
+    </div>
+</x-layouts::main>

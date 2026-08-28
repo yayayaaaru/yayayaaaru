@@ -13,7 +13,9 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'yayayaaaru'),
+    'slug' => env('APP_SLUG', 'yayayaaa'),
+    'zone' => env('APP_ZONE', 'ru'),
 
     /*
     |--------------------------------------------------------------------------

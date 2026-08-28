@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Builders\GameBuilder;
+use App\Http\Middleware\Contracts\HasRoutableSlug;
 use App\Models\Concerns\Games\HasGameRelationships;
 use App\Models\Concerns\MorphsToHistories;
 use App\Models\Concerns\MorphsToSources;
+use App\Models\Contracts\Historable;
 use Database\Factories\GameFactory;
 use Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 #[UseEloquentBuilder(GameBuilder::class)]
-class Game extends Model
+class Game extends Model implements HasRoutableSlug, Historable
 {
     /** @use HasFactory<GameFactory> */
     use HasFactory, HasGameRelationships, MorphsToSources, MorphsToHistories;
@@ -79,8 +81,11 @@ class Game extends Model
             'cis_score',
             'tag_ids',
             'category_ids',
-            'removed_at',
-            'synced_at',
         ];
+    }
+
+    public function getRouteSlug(): string
+    {
+        return $this->slug;
     }
 }
