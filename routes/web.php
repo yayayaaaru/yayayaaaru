@@ -10,17 +10,16 @@ Route::group([], function () {
 });
 
 Route::get('/', function () {
-    $ttl = now()->addHours(6);
 
-    $developers = Cache::remember(cache_key('developers_today_latest_limit_7'), $ttl, function () {
+    $developers = Cache::remember(cache_key('developers_today_latest_limit_7'), now()->addHours(1), function () {
         return \App\Models\Developer::whereDate('created_at', today())->latest('id')->limit(7)->get()->toArray();
     });
 
-    $games = Cache::remember(cache_key('games_today_latest_limit_7'), $ttl, function () {
+    $games = Cache::remember(cache_key('games_today_latest_limit_7'), now()->addHours(1), function () {
         return \App\Models\Game::with('developer')->whereDate('released_at', today())->latest('released_at')->limit(7)->get()->toArray();
     });
 
-    $categories = Cache::remember(cache_key('categories_today_limit_10'), $ttl, function () {
+    $categories = Cache::remember(cache_key('categories_today_limit_10'), now()->addHours(6), function () {
         return \App\Models\Category::withCount([
             'games',
             'games as period_games_count' => static fn($query) => $query->whereBetween('released_at', [
@@ -30,7 +29,7 @@ Route::get('/', function () {
         ])->orderByDesc('period_games_count')->orderByDesc('games_count')->limit(10)->get()->toArray();
     });
 
-    $tags = Cache::remember(cache_key('tags_today_limit_10'), $ttl, function () {
+    $tags = Cache::remember(cache_key('tags_today_limit_10'), now()->addHours(6), function () {
         return \App\Models\Tag::withCount([
             'games',
             'games as period_games_count' => static fn($query) => $query->whereBetween('released_at', [

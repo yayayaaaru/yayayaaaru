@@ -32,13 +32,13 @@ class GamesYandexGrabberCommend extends Command
      */
     public function handle(YandexGamesConnector $connector): int
     {
-        $connector->query()->add('games_count', 24);
+        $connector->query()->add('games_count', 100);
 
         Developer::query()
             ->with('sources')
             ->notSyncedFor('3 hours') // @todo
             ->whereNull('removed_at')
-            ->orderBy('id')
+            ->orderByDesc('id')
             ->chunkById(
                 self::CHUNK_SIZE,
                 function (Collection $developers) use ($connector) {
@@ -62,9 +62,21 @@ class GamesYandexGrabberCommend extends Command
                         {
                             $externalId = (int)$source->external_id;
 
-                            $res = $connector->send(
-                                new GetGamesByDeveloperRequest($externalId)
-                            );
+                            try {
+                                $res = $connector->send(
+                                    new GetGamesByDeveloperRequest($externalId)
+                                );
+                            } catch (\Exception $e) {
+                                $format = ' 0/0 | developer EID: %d | %s';
+
+                                $this->error(sprintf(
+                                    $format,
+                                    $externalId,
+                                    $e->getMessage(),
+                                ));
+
+                                continue;
+                            }
 
                             if (! $res->ok()) {
                                 $format = ' 0/0 | developer EID: %d | status CODE: %d';
