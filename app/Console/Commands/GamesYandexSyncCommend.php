@@ -69,19 +69,23 @@ class GamesYandexSyncCommend extends Command
                     );
 
                     if ($deletedIds->isNotEmpty()) {
-                        Game::query()
-                            ->whereNull('removed_at')
-                            ->whereHasSources(
-                                $deletedIds->map(
-                                    static fn(string $externalId) => new SourceDto(
-                                        SourceName::YANDEXGAMES,
-                                        $externalId,
-                                    )
-                                )
-                            )
-                            ->first()
-                            ->withHistoryFetchedAt($syncedAt)
-                            ->update(['removed_at' => now()]);
+
+                        $removedAt = now();
+
+                        foreach ($deletedIds as $deletedId) {
+
+                            $targetSource = new SourceDto(
+                                SourceName::YANDEXGAMES,
+                                $deletedId,
+                            );
+
+                            Game::query()
+                                ->whereNull('removed_at')
+                                ->whereHasSources([$targetSource])
+                                ->first()
+                                ->withHistoryFetchedAt($syncedAt)
+                                ->update(['removed_at' => $removedAt]);
+                        }
                     }
 
                     $tags = $this->taxonomyByTags($payload);

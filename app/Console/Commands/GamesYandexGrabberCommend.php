@@ -67,7 +67,7 @@ class GamesYandexGrabberCommend extends Command
                                     new GetGamesByDeveloperRequest($externalId)
                                 );
                             } catch (\Exception $e) {
-                                $format = ' 0/0 | developer EID: %d | %s';
+                                $format = ' 0/0 | developer EID: %d | ex. message: %s';
 
                                 $this->error(sprintf(
                                     $format,
@@ -75,7 +75,7 @@ class GamesYandexGrabberCommend extends Command
                                     $e->getMessage(),
                                 ));
 
-                                continue;
+                                break;
                             }
 
                             if (! $res->ok()) {
