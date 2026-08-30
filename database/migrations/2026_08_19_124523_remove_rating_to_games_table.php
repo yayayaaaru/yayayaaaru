@@ -17,4 +17,14 @@ return new class extends Migration
             $table->dropColumn('rating');
         });
     }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('games', function (Blueprint $table) {
+            $table->string('rating', 8);
+        });
+    }
 };

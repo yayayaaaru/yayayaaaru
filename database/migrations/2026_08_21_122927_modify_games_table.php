@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -16,11 +17,11 @@ return new class extends Migration
         Schema::table('games', function (Blueprint $table) {
             $table->dropColumn('rating');
 
-            $table->unsignedTinyInteger('cis_rating')->nullable()->change();
+            $table->unsignedTinyInteger('cis_rating')->default(0)->nullable()->change();
             $table->integer('reviews_count')->unsigned()->nullable()->after('cis_rating');
             $table->json('reviews_scores_stat')->nullable()->after('reviews_count');
             $table->decimal('reviews_scores_avg', 4, 3)->unsigned()->nullable()->after('reviews_scores_stat');
-            $table->decimal('min_load_time_seconds', 8,3)->unsigned()->nullable()->after('reviews_scores_avg');
+            $table->decimal('min_load_time_seconds', 8, 3)->unsigned()->nullable()->after('reviews_scores_avg');
             $table->json('tag_ids')->nullable()->after('min_load_time_seconds');
             $table->json('category_ids')->nullable()->after('tag_ids');
 
@@ -44,6 +45,12 @@ return new class extends Migration
             $table->dropColumn('category_ids');
 
             $table->renameColumn('cis_score', 'cis_rating');
+        });
+
+        DB::table('games')->whereNull('cis_rating')->update(['cis_rating' => 0]);
+
+        Schema::table('games', function (Blueprint $table) {
+            $table->unsignedTinyInteger('cis_rating')->default(0)->nullable(false)->change();
             $table->decimal('rating', 2, 1)->default(0.0)->after('cis_rating');
         });
     }
