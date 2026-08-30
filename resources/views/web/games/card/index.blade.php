@@ -7,6 +7,7 @@
     'historyReviews',
     'categories',
     'tags',
+    'views_count',
 ])
 
 @section('title', sprintf('%s (%d) от %s', $game->title, $game->released_at->year, $source->name->label()))
@@ -270,12 +271,12 @@
                 <div class="row row-cards">
                     <div class="col-md-4">
                         <x-ui.subheadline label="Страницу посетили">
-                            <x-ui.card>0 пользователей</x-ui.card>
+                            <x-ui.card>{{ $views_count }} раз(а)</x-ui.card>
                         </x-ui.subheadline>
                     </div>
                     <div class="col-md-4">
                         <x-ui.subheadline label="Добавили в избранное">
-                            <x-ui.card>0 пользователей</x-ui.card>
+                            <x-ui.card>0 пользователя</x-ui.card>
                         </x-ui.subheadline>
                     </div>
                     <div class="col-md-4">

@@ -37,6 +37,9 @@ class TagController extends Controller
      */
     public function show(Tag $tag)
     {
+        views($tag)->cooldown((int)config('viewable.cooldown_minutes'))->record();
+        $views_count = views($tag)->count(); // @todo
+
         $games = $tag->games()->orderByDesc('id')->paginate(30);
 
         return view('web.tags.card.index', compact('tag', 'games'));

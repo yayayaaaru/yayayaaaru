@@ -23,16 +23,20 @@ class DevelopersYandexGrabberJsonCommend extends Command
     public function handle(): int
     {
         $items = Items::fromFile(
-            Storage::path('developers.json')
+            Storage::path('developers_dump_1787941911.json')
         );
 
         $progressBar = $this->output->createProgressBar();
 
         foreach ($items as $developer) {
 
+            if ($developer->is_removed) {
+                continue;
+            }
+
             $targetSource = new SourceDto(
                 SourceName::YANDEXGAMES,
-                (string)$developer->id,
+                (string)$developer->external_id,
             );
 
             Developer::query()

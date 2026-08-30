@@ -10,16 +10,18 @@ use App\Models\Concerns\Developers\HasDeveloperRelationships;
 use App\Models\Concerns\MorphsToHistories;
 use App\Models\Concerns\MorphsToSources;
 use App\Models\Contracts\Historable;
+use CyrildeWit\EloquentViewable\Contracts\Viewable;
+use CyrildeWit\EloquentViewable\InteractsWithViews;
 use Database\Factories\DeveloperFactory;
 use Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 #[UseEloquentBuilder(DeveloperBuilder::class)]
-class Developer extends Model implements HasRoutableSlug, Historable
+class Developer extends Model implements HasRoutableSlug, Historable, Viewable
 {
     /** @use HasFactory<DeveloperFactory> */
-    use HasFactory, HasDeveloperRelationships, MorphsToSources, MorphsToHistories;
+    use HasFactory, HasDeveloperRelationships, MorphsToSources, MorphsToHistories, InteractsWithViews;
 
     protected $fillable = [
         'name',

@@ -18,10 +18,18 @@ class DeveloperController extends Controller
 
         /** @var array $stats */
         $stats = Cache::remember(cache_key('developers_showcase'), $ttl, function () {
+
             $stats = [];
 
             foreach (Source::cases() as $source) {
-                $stats[$source->value] = Developer::whereHasSourceNamed($source)->count();
+
+                $q = Developer::whereHasSourceNamed($source);
+
+                $stats[$source->value]['total'] = $q->count();
+                $stats[$source->value]['today'] = $q->whereBetween('created_at', [
+                    today()->startOfDay(),
+                    today()->endOfDay(),
+                ])->count();
             }
 
             return $stats;
@@ -72,8 +80,11 @@ class DeveloperController extends Controller
      */
     public function show(Developer $developer)
     {
+        views($developer)->cooldown((int)config('viewable.cooldown_minutes'))->record();
+        $views_count = views($developer)->count(); // @todo
+
         $source = $developer->sources->first(static fn($s) => $s->name === Source::YANDEXGAMES);
 
-        return view('web.developers.card.index', compact('developer', 'source'));
+        return view('web.developers.card.index', compact('developer', 'source', 'views_count'));
     }
 }

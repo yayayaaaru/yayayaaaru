@@ -31,8 +31,14 @@
                                                 </span>
                                             </div>
                                             <div class="col">
-                                                <div class="h1">
-                                                    <div>{{ number_format($count, 0, '', ' ') }} разработчиков</div>
+                                                <div class="h1 mb-3">
+                                                    <div style="margin-bottom: -10px;">
+                                                        {{ number_format($count['total'], 0, '', ' ') }}
+                                                        @if($count['today'])
+                                                        <small class="text-success">+{{ $count['today'] }}</small>
+                                                        @endif
+                                                        разработчиков
+                                                    </div>
                                                     <small class="text-muted">в каталоге</small>
                                                 </div>
                                                 <div class="font-weight-medium">{{ $source->label() }}</div>

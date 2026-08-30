@@ -8,16 +8,18 @@ use App\Builders\CategoryBuilder;
 use App\Http\Middleware\Contracts\HasRoutableSlug;
 use App\Models\Concerns\Categories\HasCategoryRelationships;
 use App\Models\Concerns\MorphsToSources;
+use CyrildeWit\EloquentViewable\Contracts\Viewable;
+use CyrildeWit\EloquentViewable\InteractsWithViews;
 use Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\UseEloquentBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 #[UseEloquentBuilder(CategoryBuilder::class)]
-class Category extends Model implements HasRoutableSlug
+class Category extends Model implements HasRoutableSlug, Viewable
 {
     /** @use HasFactory<CategoryFactory> */
-    use HasFactory, HasCategoryRelationships, MorphsToSources;
+    use HasFactory, HasCategoryRelationships, MorphsToSources, InteractsWithViews;
 
     protected $fillable = [
         'slug',
