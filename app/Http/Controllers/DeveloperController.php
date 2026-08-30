@@ -18,10 +18,18 @@ class DeveloperController extends Controller
 
         /** @var array $stats */
         $stats = Cache::remember(cache_key('developers_showcase'), $ttl, function () {
+
             $stats = [];
 
             foreach (Source::cases() as $source) {
-                $stats[$source->value] = Developer::whereHasSourceNamed($source)->count();
+
+                $q = Developer::whereHasSourceNamed($source);
+
+                $stats[$source->value]['total'] = $q->count();
+                $stats[$source->value]['today'] = $q->whereBetween('created_at', [
+                    today()->startOfDay(),
+                    today()->endOfDay(),
+                ])->count();
             }
 
             return $stats;

@@ -25,10 +25,18 @@ class GameController extends Controller
 
         /** @var array $stats */
         $stats = Cache::remember(cache_key('games_showcase'), $ttl, function () {
+
             $stats = [];
 
             foreach (Source::cases() as $source) {
-                $stats[$source->value] = Game::whereHasSourceNamed($source)->count();
+
+                $q = Game::whereHasSourceNamed($source);
+
+                $stats[$source->value]['total'] = $q->count();
+                $stats[$source->value]['today'] = $q->whereBetween('released_at', [
+                    today()->startOfDay(),
+                    today()->endOfDay(),
+                ])->count();
             }
 
             return $stats;
