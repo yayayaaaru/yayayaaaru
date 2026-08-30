@@ -165,4 +165,7 @@
             </x-developers-nav>
         </div>
     </div>
+    @pushonce('head-link')
+        <link rel="canonical" href="{{ route('developers.show', [$developer, $developer->slug]) }}">
+    @endpushonce
 </x-layouts::main>

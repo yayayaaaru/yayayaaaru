@@ -366,4 +366,7 @@
             </div>
         </div>
     </div>
+    @pushonce('head-link')
+        <link rel="canonical" href="{{ route('games.show', [$game, $game->slug]) }}">
+    @endpushonce
 </x-layouts::main>

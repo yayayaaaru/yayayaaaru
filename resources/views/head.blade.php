@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     @stack('head-meta')
     <title>@yield('title')</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head-link')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head-script')
     @stack('head-ld+json')
 </head>
