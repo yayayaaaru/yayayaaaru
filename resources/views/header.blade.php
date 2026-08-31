@@ -1,7 +1,7 @@
 @php use App\Enums\SourceName as Sources; @endphp
 
 <header class="navbar navbar-expand-md py-2 d-print-none">
-    <div class="container justify-content-sm-start">
+    <nav class="container justify-content-sm-start">
         <button
             class="navbar-toggler"
             style="font-size: 16px;"
@@ -142,17 +142,19 @@
                         </span>
                         <span class="nav-link-title"> Игры</span>
                     </a>
-                    <div class="dropdown-menu">
+                    <ul class="dropdown-menu list-unstyled mb-0">
                         @foreach(Sources::cases() as $source)
-                            <a @class([
-                                'dropdown-item',
-                                'disabled' => $source !== Sources::YANDEXGAMES,
-                                'active' => request()->routeIs('games') && request()->route('provider') === $source
-                            ])
-                               href="{{ route('games', $source) }}"
-                            >
-                                {{ $source->label() }}
-                            </a>
+                            <li>
+                                <a @class([
+                                    'dropdown-item',
+                                    'disabled' => $source !== Sources::YANDEXGAMES,
+                                    'active' => request()->routeIs('games') && request()->route('provider') === $source
+                                ])
+                                   href="{{ route('games', $source) }}"
+                                >
+                                    {{ $source->label() }}
+                                </a>
+                            </li>
                         @endforeach
                         <div class="dropdown-divider"></div>
                         <a
@@ -161,7 +163,7 @@
                         >
                             Витрина
                         </a>
-                    </div>
+                    </ul>
                 </li>
                 <li class="nav-item dropdown">
                     <a @class([
@@ -192,17 +194,19 @@
                         </span>
                         <span class="nav-link-title"> Разработчики</span>
                     </a>
-                    <div class="dropdown-menu">
+                    <ul class="dropdown-menu list-unstyled mb-0">
                         @foreach(Sources::cases() as $source)
-                            <a @class([
-                                'dropdown-item',
-                                'disabled' => $source !== Sources::YANDEXGAMES,
-                                'active' => request()->routeIs('developers') && request()->route('provider') === $source
-                            ])
-                               href="{{ route('developers', $source) }}"
-                            >
-                                {{ $source->label() }}
-                            </a>
+                            <li>
+                                <a @class([
+                                    'dropdown-item',
+                                    'disabled' => $source !== Sources::YANDEXGAMES,
+                                    'active' => request()->routeIs('developers') && request()->route('provider') === $source
+                                ])
+                                   href="{{ route('developers', $source) }}"
+                                >
+                                    {{ $source->label() }}
+                                </a>
+                            </li>
                         @endforeach
                         <div class="dropdown-divider"></div>
                         <a @class([
@@ -213,7 +217,7 @@
                         >
                             Витрина
                         </a>
-                    </div>
+                    </ul>
                 </li>
                 {{-- BEGIN USERS --}}
                 <li class="nav-item">
@@ -248,7 +252,7 @@
                 </li>
             </ul>
         </div>
-    </div>
+    </nav>
 </header>
 @if (session()->has('flash'))
     <div class="container">

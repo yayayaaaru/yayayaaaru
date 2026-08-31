@@ -12,7 +12,7 @@
             <div class="text-muted">{{ $sourceName }}</div>
         </div>
     </div>
-    <div class="page-body">
+    <article class="page-body">
         <div class="container">
             <div class="d-flex flex-md-row flex-column">
                 <div
@@ -55,7 +55,10 @@
                     @endauth
                 </div>
                 <div class="d-flex flex-column mb-md-0 mb-3">
-                    <div class="avatar" style="--tblr-avatar-size: 10rem; background-image: url('{{ asset('static/media/avatar/not-found.png') }}'); background-size: cover;">
+                    <div
+                        class="avatar"
+                        style="--tblr-avatar-size: 10rem; background-image: url('{{ asset('static/media/avatar/not-found.png') }}'); background-size: cover;"
+                    >
                         @if(! is_null($developer->removed_at))
                             <div class="ribbon ribbon-top bg-danger" title="Удалён {{ $developer->removed_at->ago() }}">
                                 <svg
@@ -139,7 +142,7 @@
 {{--                @endauth--}}
             </div>
             <div class="card mt-3">
-                <div class="card-body">Биографии пока нет</div>
+                <p class="card-body m-0">Биографии пока нет</p>
             </div>
             <x-developers-nav :developer="$developer">
                 <x-ui.subheadline label="Описание">
@@ -147,24 +150,24 @@
                 </x-ui.subheadline>
                 <div class="row row-cards">
                     <div class="col-md-4">
-                        <x-ui.subheadline label="Страницу посетили">
+                        <x-ui.subheadline label="Страницу посетили" :level="3">
                             <x-ui.card>{{ $views_count }} раз(а)</x-ui.card>
                         </x-ui.subheadline>
                     </div>
                     <div class="col-md-4">
-                        <x-ui.subheadline label="Добавили в избранное">
+                        <x-ui.subheadline label="Добавили в избранное" :level="3">
                             <x-ui.card>0 пользователя</x-ui.card>
                         </x-ui.subheadline>
                     </div>
                     <div class="col-md-4">
-                        <x-ui.subheadline label="Голосов за всё время">
+                        <x-ui.subheadline label="Голосов за всё время" :level="3">
                             <x-ui.card>0 голоса</x-ui.card>
                         </x-ui.subheadline>
                     </div>
                 </div>
             </x-developers-nav>
         </div>
-    </div>
+    </article>
     @pushonce('head-link')
         <link rel="canonical" href="{{ route('developers.show', [$developer, $developer->slug]) }}">
     @endpushonce
