@@ -7,9 +7,14 @@ namespace App\Http\Controllers;
 use App\Enums\SourceName as Source;
 use App\Models\Game;
 use App\Services\HistoryService;
+use Artesaos\SEOTools\Facades\JsonLd;
+use Artesaos\SEOTools\Facades\OpenGraph;
+use Artesaos\SEOTools\Facades\SEOMeta;
+use Artesaos\SEOTools\Facades\TwitterCard;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class GameController extends Controller
 {
@@ -42,6 +47,9 @@ class GameController extends Controller
             return $stats;
         });
 
+        // --- Базовые мета-теги ---
+        SEOMeta::setTitle('Игры — Витрина', false)->setDescription('Витрина');
+
         return view('web.games.showcase', compact('stats'));
     }
 
@@ -55,6 +63,9 @@ class GameController extends Controller
             ->whereDate('released_at', today())
             ->latest('released_at')
             ->get();
+
+        // --- Базовые мета-теги ---
+        SEOMeta::setTitle(sprintf('%s — новые за сегодня, Игры', $source->name), false)->setDescription('Свежие релизы сегодняшнего дня — играйте в новинки прямо сейчас.');
 
         return view('web.games.latest', compact('source', 'games'));
     }
@@ -73,11 +84,15 @@ class GameController extends Controller
             ->orderByDesc('id')
             ->paginate(30);
 
+        // --- Базовые мета-теги ---
+        SEOMeta::setTitle(sprintf('Игры — %s', $source->label()), false)->setDescription($source->label());
+
         return view('web.games.index', compact('games', 'source'));
     }
 
     /**
      * Display the specified resource.
+     * @todo какашка - переделать
      */
     public function show(Game $game)
     {
@@ -106,6 +121,51 @@ class GameController extends Controller
             'scores_avg' => $timelines->get('reviews_scores_avg'),
             'scores_stat' => $timelines->get('reviews_scores_stat'),
         ];
+
+        $title = sprintf('%s (%d) от %s', $game->title, $game->released_at->year, $source->name->label());
+        $description = Str::limit($game->description, 160, '');
+        $canonical = route('games.show', [$game, $game->slug]);
+        $image = asset('static/media/not-found.png'); // @todo
+
+        // --- Базовые мета-теги ---
+        SEOMeta::setTitle($title, false)
+            ->setDescription($description)
+            ->setCanonical($canonical)
+            ->addKeyword($tags->pluck('title')->toArray());
+
+        // --- Open Graph (для соцсетей, но также влияет на карточки в поиске) ---
+        OpenGraph::setTitle($title)
+            ->setDescription($description)
+            ->setUrl($canonical)
+            ->setType('website')
+            ->addImage($image)
+            ->addProperty('locale', 'ru_RU')
+            ->addProperty('article:author', $developer->name);
+
+        // --- Twitter Card ---
+        TwitterCard::setType('summary_large_image')
+            ->setTitle($title)
+            ->setDescription($description)
+            ->setImage($image);
+
+        // --- JSON-LD: schema.org/VideoGame ---
+        JsonLd::setType('VideoGame');
+        JsonLd::setTitle($game->title);
+        JsonLd::setDescription($description);
+        JsonLd::addImage($image);
+        JsonLd::addValue('url', $canonical);
+        JsonLd::addValue('genre', $categories->pluck('title')->toArray());
+        JsonLd::addValue('applicationCategory', 'Game');
+        JsonLd::addValue('operatingSystem', 'Web Browser');
+        JsonLd::addValue('author', ['@type' => 'Organization', 'name' => $developer->name]);
+        JsonLd::addValue('datePublished', $game->released_at->toDateString());
+        JsonLd::addValue('aggregateRating', [
+            '@type' => 'AggregateRating',
+            'ratingValue' => round($game->reviews_scores_avg, 1),
+            'ratingCount' => $game->reviews_count,
+            'bestRating' => 5,
+            'worstRating' => 1,
+        ]);
 
         return view('web.games.card.index', compact([
             'game',

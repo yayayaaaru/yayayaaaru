@@ -1,7 +1,5 @@
 @props(['developer', 'source', 'views_count'])
 
-@section('title', sprintf('Разработчик — %s, %s', $developer->name, ($sourceName = $source->name->label())))
-
 <x-layouts::main>
 {{--    <div class="container mt-4">--}}
 {{--        {{ Breadcrumbs::render('developers.show', $source, $developer) }}--}}
@@ -9,7 +7,7 @@
     <div class="page-header">
         <div class="container text-uppercase">
             <div class="page-title">Разработчики</div>
-            <div class="text-muted">{{ $sourceName }}</div>
+            <div class="text-muted">{{ $source->name->label() }}</div>
         </div>
     </div>
     <article class="page-body">

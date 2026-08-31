@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\SourceName as Source;
 use App\Models\Developer;
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -32,6 +33,8 @@ class DeveloperController extends Controller
                 ])->count();
             }
 
+            SEOMeta::setTitle('Разработчики — Витрина', false)->setDescription('Витрина');
+
             return $stats;
         });
 
@@ -48,6 +51,8 @@ class DeveloperController extends Controller
             ->latest('id')
             ->get();
 
+        SEOMeta::setTitle(sprintf('%s — новые за сегодня, Разработчики', $source->name), false)->setDescription('Свежие студии, которые только что добавили свои игры на платформу.');
+
         return view('web.developers.latest', compact('source', 'developers'));
     }
 
@@ -56,6 +61,9 @@ class DeveloperController extends Controller
         $source = $developer->sources->first(static fn($s) => $s->name === Source::YANDEXGAMES);
 
         $games = $developer->games()->orderByDesc('id')->paginate(30);
+
+        // --- Базовые мета-теги ---
+        SEOMeta::setTitle(sprintf('Игры разработчика %s — %s', $developer->name, $source->name->label()), false)->setDescription('Игры.');
 
         return view('web.developers.card.games', compact('source', 'developer', 'games'));
     }
@@ -72,6 +80,9 @@ class DeveloperController extends Controller
             ->orderByDesc('created_at')
             ->paginate(30);
 
+        // --- Базовые мета-теги ---
+        SEOMeta::setTitle(sprintf('Разработчики — %s', $source->label()), false)->setDescription($source->label());
+
         return view('web.developers.index', compact('developers', 'source'));
     }
 
@@ -84,6 +95,9 @@ class DeveloperController extends Controller
         $views_count = views($developer)->count(); // @todo
 
         $source = $developer->sources->first(static fn($s) => $s->name === Source::YANDEXGAMES);
+
+        // --- Базовые мета-теги ---
+        SEOMeta::setTitle(sprintf('Разработчик — %s, %s', $developer->name, ($sourceName = $source->name->label())), false)->setDescription($sourceName);
 
         return view('web.developers.card.index', compact('developer', 'source', 'views_count'));
     }

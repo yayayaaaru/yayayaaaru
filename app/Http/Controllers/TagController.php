@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Tag;
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -29,6 +30,9 @@ class TagController extends Controller
             ->orderByDesc('games_count')
             ->get();
 
+        // --- Базовые мета-теги ---
+        SEOMeta::setTitle('Все теги', false)->setDescription('Игры по тегам: без скачивания, десктоп и бесплатные.');
+
         return view('web.tags.index', compact('tags'));
     }
 
@@ -41,6 +45,9 @@ class TagController extends Controller
         $views_count = views($tag)->count(); // @todo
 
         $games = $tag->games()->orderByDesc('id')->paginate(30);
+
+        // --- Базовые мета-теги ---
+        SEOMeta::setTitle(sprintf('Тег — %s', $tag->title), false)->setDescription($tag->title);
 
         return view('web.tags.card.index', compact('tag', 'games'));
     }

@@ -1,7 +1,5 @@
 @props(['developers', 'source'])
 
-@section('title', 'Разработчики — ' . $source->label())
-
 <x-layouts::main>
 {{--    <div class="container mt-4">--}}
 {{--        {{ Breadcrumbs::render('developers', $source) }}--}}

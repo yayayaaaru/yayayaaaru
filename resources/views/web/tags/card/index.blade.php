@@ -1,7 +1,5 @@
 @props(['tag', 'games'])
 
-@section('title', sprintf('Тег — %s', $tag->title))
-
 <x-layouts::main>
 {{--    <div class="container mt-4">--}}
 {{--        {{ Breadcrumbs::render('developers', $source) }}--}}

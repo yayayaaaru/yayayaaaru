@@ -1,7 +1,5 @@
 @props(['categories'])
 
-@section('title', 'Все категории')
-
 <x-layouts::main>
 {{--    <div class="container mt-4">--}}
 {{--        {{ Breadcrumbs::render('developers', $source) }}--}}
