@@ -6,7 +6,10 @@ namespace App\Http\Controllers;
 
 use App\Enums\SourceName as Source;
 use App\Models\Developer;
+use Artesaos\SEOTools\Facades\JsonLd;
+use Artesaos\SEOTools\Facades\OpenGraph;
 use Artesaos\SEOTools\Facades\SEOMeta;
+use Artesaos\SEOTools\Facades\TwitterCard;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -88,6 +91,7 @@ class DeveloperController extends Controller
 
     /**
      * Display the specified resource.
+     * @todo какашка - переделать
      */
     public function show(Developer $developer)
     {
@@ -96,8 +100,40 @@ class DeveloperController extends Controller
 
         $source = $developer->sources->first(static fn($s) => $s->name === Source::YANDEXGAMES);
 
+        $title = sprintf('Разработчик — %s, %s', $developer->name, ($sourceName = $source->name->label()));
+        $description = sprintf('Профиль разработчика %s от %s', $developer->name, $sourceName);
+        $canonical = route('developers.show', [$developer, $developer->slug]);
+        $image = asset('static/media/avatar/not-found.png');
+
         // --- Базовые мета-теги ---
-        SEOMeta::setTitle(sprintf('Разработчик — %s, %s', $developer->name, ($sourceName = $source->name->label())), false)->setDescription($sourceName);
+        SEOMeta::setTitle($title)->setDescription($description)->setCanonical($canonical);
+
+        // --- Open Graph (для соцсетей, но также влияет на карточки в поиске) ---
+        OpenGraph::setTitle($title)
+            ->setDescription($description)
+            ->setUrl($canonical)
+            ->setType('profile')
+            ->addImage($image)
+            ->addProperty('locale', 'ru_RU')
+            ->addProperty('profile:username', $developer->name);
+
+        // --- Twitter Card ---
+        TwitterCard::setType('summary')
+            ->setTitle($title)
+            ->setDescription($description)
+            ->setImage($image);
+
+        // --- JSON-LD: schema.org/VideoGame ---
+        JsonLd::setType('ProfilePage');
+        JsonLd::setTitle($title);
+        JsonLd::setDescription($description);
+        JsonLd::addImage($image);
+        JsonLd::addValue('url', $canonical);
+        JsonLd::addValue('mainEntity', [
+            '@type' => 'Organization',
+            'name' => $developer->name,
+            'url' => $canonical,
+        ]);
 
         return view('web.developers.card.index', compact('developer', 'source', 'views_count'));
     }

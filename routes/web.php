@@ -10,6 +10,10 @@ Route::group([], function () {
     require __DIR__ . '/web.tags.php';
 });
 
+Route::get('/robots.txt', function () {
+    return response()->view('robots')->header('Content-Type', 'text/plain');
+});
+
 Route::get('/', function () {
 
     // --- Базовые мета-теги ---
