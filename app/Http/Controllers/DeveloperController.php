@@ -36,10 +36,10 @@ class DeveloperController extends Controller
                 ])->count();
             }
 
-            SEOMeta::setTitle('Разработчики — Витрина', false)->setDescription('Витрина');
-
             return $stats;
         });
+
+        SEOMeta::setTitle('Разработчики — Витрина', false)->setDescription('Витрина');
 
         return view('web.developers.showcase', compact('stats'));
     }
