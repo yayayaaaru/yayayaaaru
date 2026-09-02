@@ -28,8 +28,8 @@ class GameController extends Controller
     {
         $ttl = now()->addHours(3);
 
-        /** @var array $stats */
-        $stats = Cache::remember(cache_key('games_showcase'), $ttl, function () {
+        /** @var array $statsBySource */
+        $statsBySource = Cache::remember(cache_key('games_showcase'), $ttl, function () {
 
             $stats = [];
 
@@ -44,10 +44,25 @@ class GameController extends Controller
             return $stats;
         });
 
+        $stats = Cache::remember(cache_key('games_showcase_all'), $ttl, function () {
+
+            $muted = ['title' => 'Всего приложений', 'count' => Game::count()];
+            $green = ['title' => 'Опубликовано', 'count' => Game::whereNull('removed_at')->count()];
+            $yellow = ['title' => 'В новинках', 'count' => Game::whereJsonContains('category_ids', [12])->count()];
+            $red = ['title' => 'Удалено', 'count' => Game::whereNotNull('removed_at')->count()];
+
+            return [
+                'bg-muted-lt' => $muted,
+                'bg-green-lt' => $green,
+                'bg-yellow-lt' => $yellow,
+                'bg-red-lt' => $red,
+            ];
+        });
+
         // --- Базовые мета-теги ---
         SEOMeta::setTitle('Игры — Витрина', false)->setDescription('Витрина');
 
-        return view('web.games.showcase', compact('stats'));
+        return view('web.games.showcase', compact('statsBySource', 'stats'));
     }
 
     public function latest(Source $source)

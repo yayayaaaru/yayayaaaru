@@ -1,6 +1,6 @@
 @php use App\Enums\SourceName as Source; @endphp
 
-@props(['stats'])
+@props(['statsBySource', 'stats'])
 
 <x-layouts::main>
     {{--    <div class="container mt-4">--}}
@@ -14,8 +14,8 @@
     </div>
     <div class="page-body">
         <div class="container">
-            <div class="row row-cards">
-                @foreach($stats as $sourceName => $count)
+            <div class="row row-cards mb-4">
+                @foreach($statsBySource as $sourceName => $count)
                     @php($source = Source::from($sourceName))
                     <div class="col-12 col-lg-4">
                         <div class="card card-sm">
@@ -40,6 +40,50 @@
                                         <div class="font-weight-medium">{{ $source->label() }}</div>
                                         <div class="text-secondary">
                                             <a href="{{ route('games', $source) }}">Перейти</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            <x-ui.subheadline label="Статистика"/>
+
+            <div class="row">
+                @foreach($stats as $bg => $data)
+                    <div class="col">
+                        <div class="card card-sm">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <span @class(['avatar', $bg])>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-box"
+                                                width="24"
+                                                height="24"
+                                                viewBox="0 0 24 24"
+                                                stroke-width="2"
+                                                stroke="currentColor"
+                                                fill="none"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                            >
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5"></path>
+                                                <path d="M12 12l8 -4.5"></path>
+                                                <path d="M12 12l0 9"></path><path d="M12 12l-8 -4.5"></path>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="col">
+                                        <div class="font-weight-medium">
+                                            <b>{{ number_format($data['count'], 0, '', ' ') }}</b>
+                                        </div>
+                                        <div class="text-secondary text-uppercase">
+                                            {{ $data['title'] }}
                                         </div>
                                     </div>
                                 </div>

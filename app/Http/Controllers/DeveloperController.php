@@ -20,8 +20,8 @@ class DeveloperController extends Controller
     {
         $ttl = now()->addHours(3);
 
-        /** @var array $stats */
-        $stats = Cache::remember(cache_key('developers_showcase'), $ttl, function () {
+        /** @var array $statsBySource */
+        $statsBySource = Cache::remember(cache_key('developers_showcase'), $ttl, function () {
 
             $stats = [];
 
@@ -36,9 +36,20 @@ class DeveloperController extends Controller
             return $stats;
         });
 
+        $stats = Cache::remember(cache_key('developers_showcase_all'), $ttl, function () {
+
+            $muted = ['title' => 'Всего разработчиков', 'count' => Developer::count()];
+            $red = ['title' => 'Удалено', 'count' => Developer::whereNotNull('removed_at')->count()];
+
+            return [
+                'bg-muted-lt' => $muted,
+                'bg-red-lt' => $red,
+            ];
+        });
+
         SEOMeta::setTitle('Разработчики — Витрина', false)->setDescription('Витрина');
 
-        return view('web.developers.showcase', compact('stats'));
+        return view('web.developers.showcase', compact('statsBySource', 'stats'));
     }
 
     public function latest(Source $source)
