@@ -2,8 +2,6 @@
 
 @props(['stats'])
 
-@section('title', 'Разработчики — Витрина')
-
 <x-layouts::main>
 {{--    <div class="container mt-4">--}}
 {{--        {{ Breadcrumbs::render('developers.showcase') }}--}}

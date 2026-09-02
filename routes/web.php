@@ -1,15 +1,24 @@
 <?php
 
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Support\Facades\Route;
 
 Route::group([], function () {
+    require __DIR__ . '/sitemap.php';
     require __DIR__ . '/web.games.php';
     require __DIR__ . '/web.developers.php';
     require __DIR__ . '/web.categories.php';
     require __DIR__ . '/web.tags.php';
 });
 
+Route::get('/robots.txt', function () {
+    return response()->view('robots')->header('Content-Type', 'text/plain');
+});
+
 Route::get('/', function () {
+
+    // --- Базовые мета-теги ---
+    SEOMeta::setTitle(config('app.name'), false)->setDescription(\Illuminate\Support\Str::limit('Мы собираем и анализируем данные о тысячах браузерных игр: рейтинги, оценки игроков, динамику популярности, обновления и тренды. Наша цель — помочь вам выбрать лучшую игру или отследить состояние любимого проекта.', 160, ''));
 
     $developers = Cache::remember(cache_key('developers_today_latest_limit_7'), now()->addHours(1), function () {
         return \App\Models\Developer::whereDate('created_at', today())->latest('id')->limit(7)->get()->toArray();

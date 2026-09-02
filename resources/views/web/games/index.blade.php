@@ -1,6 +1,6 @@
 @props(['games', 'source'])
 
-@section('title', sprintf('Игры — %s', $source->label()))
+@section('title', )
 
 <x-layouts::main>
 {{--    <div class="container mt-4">--}}

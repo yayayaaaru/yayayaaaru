@@ -1,7 +1,5 @@
 @props(['tags'])
 
-@section('title', 'Все теги')
-
 <x-layouts::main>
 {{--    <div class="container mt-4">--}}
 {{--        {{ Breadcrumbs::render('developers', $source) }}--}}

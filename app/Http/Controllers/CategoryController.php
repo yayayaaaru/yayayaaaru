@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -29,6 +30,9 @@ class CategoryController extends Controller
             ->orderByDesc('games_count')
             ->get();
 
+        // --- Базовые мета-теги ---
+        SEOMeta::setTitle('Все категории', false)->setDescription('Все категории в одном месте: от свежих релизов до проверенной классики.');
+
         return view('web.categories.index', compact('categories'));
     }
 
@@ -41,6 +45,9 @@ class CategoryController extends Controller
         $views_count = views($category)->count(); // @todo
 
         $games = $category->games()->orderByDesc('id')->paginate(30);
+
+        // --- Базовые мета-теги ---
+        SEOMeta::setTitle(sprintf('Категория — %s', $category->title), false)->setDescription($category->title);
 
         return view('web.categories.card.index', compact('category', 'games'));
     }

@@ -4,10 +4,10 @@
 <body data-bs-theme="light" data-user="{{ json_encode(['id' => auth()->id()]) }}">
 <div class="page">
     @include('header')
-    <div class="page-wrapper">
+    <main class="page-wrapper">
         {{ $slot }}
         @include('footer')
-    </div>
+    </main>
 </div>
 @stack('body-script')
 </body>

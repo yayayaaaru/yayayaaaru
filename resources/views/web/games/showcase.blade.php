@@ -2,8 +2,6 @@
 
 @props(['stats'])
 
-@section('title', 'Игры — Витрина')
-
 <x-layouts::main>
     {{--    <div class="container mt-4">--}}
     {{--        {{ Breadcrumbs::render('games.showcase') }}--}}

@@ -1,7 +1,5 @@
 @props(['developers', 'source'])
 
-@section('title', sprintf('%s — новые за сегодня, Разработчики', $source->name))
-
 <x-layouts::main>
     {{--    <div class="container mt-4">--}}
     {{--        {{ Breadcrumbs::render('developers.showcase') }}--}}

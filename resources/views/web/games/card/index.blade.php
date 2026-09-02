@@ -22,14 +22,20 @@
             <div class="text-muted">{{ $source->name->label() }}</div>
         </div>
     </div>
-    <div class="page-body">
+    <article class="page-body">
         <div class="container">
             <div class="row">
                 <div class="col-12 col-lg-7">
                     <div id="carousel-controls" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-inner rounded-3">
                             <div class="carousel-item active">
-                                <img class="d-block w-100" alt="" src="{{ asset('static/media/not-found.png') }}">
+                                <figure class="m-0">
+                                    <img
+                                        class="d-block w-100"
+                                        alt="{{ $game->title }}"
+                                        src="{{ asset('static/media/not-found.png') }}"
+                                    >
+                                </figure>
                             </div>
                         </div>
                         <a class="carousel-control-prev" href="#carousel-controls" role="button" data-bs-slide="prev">
@@ -45,7 +51,7 @@
                 <div class="col-12 col-lg-5 d-flex flex-column mt-4 mt-lg-0">
                     <div class="mb-3">
                         <h1 class="m-0">{{ $game->title }}</h1>
-                        <div>
+                        <p class="mb-2">
                             Разработчик
                             <a
                                 href="{{ route('developers.show', [$developer, $developer->slug]) }}"
@@ -53,9 +59,9 @@
                             >
                                 {{ $developer->name }}
                             </a>
-                        </div>
+                        </p>
                         <hr class="my-2">
-                        <div>
+                        <p class="mb-2">
                             Дата выхода
                             <span class="text-muted">
                                 @if($game->released_at)
@@ -64,11 +70,11 @@
                                 <b>нет информации</b>
                                 @endif
                             </span>
-                        </div>
+                        </p>
                         <x-ui.subheadline label="Звезды" class="mt-3"/>
-                        <div class="mt-3">
+                        <ul class="list-unstyled m-0">
                             @foreach($game->reviews_scores_stat as $star => $value)
-                                <div class="text-yellow d-flex">
+                                <li class="text-yellow d-flex">
                                     <div class="flex-grow-1">
                                         <b>{{ 6 - $star }}</b>
                                         @for($i = 5; $i >= $star; --$i)
@@ -84,7 +90,7 @@
                                                 <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/>
                                             </svg>
                                         @endfor
-                                        </div>
+                                    </div>
                                     <span>
                                         {{ $value }}
                                         <svg
@@ -106,9 +112,9 @@
                                             <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"/>
                                         </svg>
                                     </span>
-                                </div>
+                                </li>
                             @endforeach
-                        </div>
+                        </ul>
                     </div>
                     <div class="mt-auto">
                         <div class="d-flex">
@@ -233,33 +239,33 @@
             </div>
 
             <x-ui.subheadline label="Категории" class="blue mt-3">
-                <div class="row row-cols-auto g-2">
+                <ul class="row row-cols-auto list-unstyled g-2">
                     @foreach($categories as $c)
-                        <div class="col">
+                        <li class="col ps-0 pe-2">
                             <a
                                 href="{{ route('categories.show', [$c->id, $c->slug]) }}"
                                 class="badge link-blue bg-azure-lt text-uppercase rounded-0 p-2 text-decoration-none"
                             >
                                 {{ $c->title }}
                             </a>
-                        </div>
+                        </li>
                     @endforeach
-                </div>
+                </ul>
             </x-ui.subheadline>
 
             <x-ui.subheadline label="Теги" class="orange mt-3">
-                <div class="row row-cols-auto g-2">
+                <ul class="row row-cols-auto list-unstyled g-2">
                     @foreach($tags as $t)
-                        <div class="col">
+                        <li class="col ps-0 pe-2">
                             <a
                                 href="{{ route('tags.show', [$t->id, $t->slug]) }}"
                                 class="badge link-yellow bg-orange-lt text-uppercase rounded-0 p-2 text-decoration-none"
                             >
                                 {{ $t->title }}
                             </a>
-                        </div>
+                        </li>
                     @endforeach
-                </div>
+                </ul>
             </x-ui.subheadline>
 
             <x-games-nav :game="$game">
@@ -270,100 +276,102 @@
                 </x-ui.subheadline>
                 <div class="row row-cards">
                     <div class="col-md-4">
-                        <x-ui.subheadline label="Страницу посетили">
+                        <x-ui.subheadline label="Страницу посетили" :level="3">
                             <x-ui.card>{{ $views_count }} раз(а)</x-ui.card>
                         </x-ui.subheadline>
                     </div>
                     <div class="col-md-4">
-                        <x-ui.subheadline label="Добавили в избранное">
+                        <x-ui.subheadline label="Добавили в избранное" :level="3">
                             <x-ui.card>0 пользователя</x-ui.card>
                         </x-ui.subheadline>
                     </div>
                     <div class="col-md-4">
-                        <x-ui.subheadline label="Голосов за всё время">
+                        <x-ui.subheadline label="Голосов за всё время" :level="3">
                             <x-ui.card>0 голоса</x-ui.card>
                         </x-ui.subheadline>
                     </div>
                 </div>
             </x-games-nav>
 
-            @if($historyCisScore->isNotEmpty())
-            <x-ui.subheadline label="Рейтинг СНГ">
-                <x-ui.card style="white-space: normal;">
-                    @foreach($historyCisScore as $history)
-                        <div>{{ sprintf('Дата: %s, Значение: %d пунктов', $history['date'], $history['value']) }}</div>
-                    @endforeach
-                </x-ui.card>
-            </x-ui.subheadline>
-            @endif
-
-            @if($historyMinLoadTime->isNotEmpty())
-            <x-ui.subheadline label="Время загрузки">
-                <x-ui.card style="white-space: normal;">
-                    @foreach($historyMinLoadTime as $history)
-                        <div>{{ sprintf('Дата: %s, Значение: %f секунд', $history['date'], $history['value']) }}</div>
-                    @endforeach
-                </x-ui.card>
-            </x-ui.subheadline>
-            @endif
-
-            <div class="row">
-                @if($historyReviews['count']->isNotEmpty())
-                <div class="col">
-                    <x-ui.subheadline label="Количество оценок">
-                        <x-ui.card style="white-space: normal;">
-                            @foreach($historyReviews['count'] as $history)
-                                <div>{{ sprintf('Дата: %s, Значение: %d оценок', $history['date'], $history['value']) }}</div>
-                            @endforeach
-                        </x-ui.card>
-                    </x-ui.subheadline>
-                </div>
+            <aside data-nosnippet>
+                @if($historyCisScore->isNotEmpty())
+                <x-ui.subheadline label="Рейтинг СНГ" :level="3">
+                    <x-ui.card style="white-space: normal;">
+                        @foreach($historyCisScore as $history)
+                            <div>{{ sprintf('Дата: %s, Значение: %d пунктов', $history['date'], $history['value']) }}</div>
+                        @endforeach
+                    </x-ui.card>
+                </x-ui.subheadline>
                 @endif
 
-                @if($historyReviews['scores_avg']->isNotEmpty())
-                <div class="col">
-                    <x-ui.subheadline label="Среднее">
-                        <x-ui.card style="white-space: normal;">
-                            @foreach($historyReviews['scores_avg'] as $history)
-                                <div>{{ sprintf('Дата: %s, Значение: %f оценка', $history['date'], $history['value']) }}</div>
-                            @endforeach
-                        </x-ui.card>
-                    </x-ui.subheadline>
-                </div>
+                @if($historyMinLoadTime->isNotEmpty())
+                <x-ui.subheadline label="Время загрузки" :level="3">
+                    <x-ui.card style="white-space: normal;">
+                        @foreach($historyMinLoadTime as $history)
+                            <div>{{ sprintf('Дата: %s, Значение: %f секунд', $history['date'], $history['value']) }}</div>
+                        @endforeach
+                    </x-ui.card>
+                </x-ui.subheadline>
                 @endif
 
-                @if($historyReviews['scores_stat']->isNotEmpty())
-                <div class="col-12">
-                    <x-ui.subheadline label="Звезды">
-                        <x-ui.card style="white-space: normal;">
-                            @foreach($historyReviews['scores_stat'] as $history)
-                                <div>
-                                    Дата: {{ $history['date'] }},
-                                    Значение:
-                                    @foreach($history['value'] as $star => $value)
-                                        <span class="text-yellow badge bg-yellow-lt" style="font-size: 14px;">
-                                            <b>{{ $star }}</b>
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="24"
-                                                height="24"
-                                                viewBox="0 0 24 24"
-                                                fill="currentColor"
-                                                class="icon icon-tabler icons-tabler-filled icon-tabler-star"
-                                            >
-                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/>
-                                            </svg>
-                                            {{ $value }}
-                                        </span>
-                                    @endforeach
-                                </div>
-                            @endforeach
-                        </x-ui.card>
-                    </x-ui.subheadline>
+                <div class="row">
+                    @if($historyReviews['count']->isNotEmpty())
+                    <div class="col">
+                        <x-ui.subheadline label="Количество оценок" :level="3">
+                            <x-ui.card style="white-space: normal;">
+                                @foreach($historyReviews['count'] as $history)
+                                    <div>{{ sprintf('Дата: %s, Значение: %d оценок', $history['date'], $history['value']) }}</div>
+                                @endforeach
+                            </x-ui.card>
+                        </x-ui.subheadline>
+                    </div>
+                    @endif
+
+                    @if($historyReviews['scores_avg']->isNotEmpty())
+                    <div class="col">
+                        <x-ui.subheadline label="Среднее" :level="3">
+                            <x-ui.card style="white-space: normal;">
+                                @foreach($historyReviews['scores_avg'] as $history)
+                                    <div>{{ sprintf('Дата: %s, Значение: %f оценка', $history['date'], $history['value']) }}</div>
+                                @endforeach
+                            </x-ui.card>
+                        </x-ui.subheadline>
+                    </div>
+                    @endif
+
+                    @if($historyReviews['scores_stat']->isNotEmpty())
+                    <div class="col-12">
+                        <x-ui.subheadline label="Звезды" :level="3">
+                            <x-ui.card style="white-space: normal;">
+                                @foreach($historyReviews['scores_stat'] as $history)
+                                    <div>
+                                        Дата: {{ $history['date'] }},
+                                        Значение:
+                                        @foreach($history['value'] as $star => $value)
+                                            <span class="text-yellow badge bg-yellow-lt" style="font-size: 14px;">
+                                                <b>{{ $star }}</b>
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="24"
+                                                    height="24"
+                                                    viewBox="0 0 24 24"
+                                                    fill="currentColor"
+                                                    class="icon icon-tabler icons-tabler-filled icon-tabler-star"
+                                                >
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                    <path d="M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z"/>
+                                                </svg>
+                                                {{ $value }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @endforeach
+                            </x-ui.card>
+                        </x-ui.subheadline>
+                    </div>
+                    @endif
                 </div>
-                @endif
-            </div>
+            </aside>
         </div>
-    </div>
+    </article>
 </x-layouts::main>
