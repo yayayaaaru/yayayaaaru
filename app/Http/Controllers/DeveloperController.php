@@ -18,7 +18,7 @@ class DeveloperController extends Controller
 {
     public function showcase()
     {
-        $ttl = now()->addHours(6);
+        $ttl = now()->addHours(3);
 
         /** @var array $stats */
         $stats = Cache::remember(cache_key('developers_showcase'), $ttl, function () {
@@ -30,10 +30,7 @@ class DeveloperController extends Controller
                 $q = Developer::whereHasSourceNamed($source);
 
                 $stats[$source->value]['total'] = $q->count();
-                $stats[$source->value]['today'] = $q->whereBetween('created_at', [
-                    today()->startOfDay(),
-                    today()->endOfDay(),
-                ])->count();
+                $stats[$source->value]['today'] = $q->whereDate('created_at', today())->count();
             }
 
             return $stats;

@@ -4,6 +4,7 @@ use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Support\Facades\Route;
 
 Route::group([], function () {
+    require __DIR__ . '/sitemap.php';
     require __DIR__ . '/web.games.php';
     require __DIR__ . '/web.developers.php';
     require __DIR__ . '/web.categories.php';

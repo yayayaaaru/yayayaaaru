@@ -26,7 +26,7 @@ class GameController extends Controller
 
     public function showcase()
     {
-        $ttl = now()->addHours(6);
+        $ttl = now()->addHours(3);
 
         /** @var array $stats */
         $stats = Cache::remember(cache_key('games_showcase'), $ttl, function () {
@@ -38,10 +38,7 @@ class GameController extends Controller
                 $q = Game::whereHasSourceNamed($source);
 
                 $stats[$source->value]['total'] = $q->count();
-                $stats[$source->value]['today'] = $q->whereBetween('released_at', [
-                    today()->startOfDay(),
-                    today()->endOfDay(),
-                ])->count();
+                $stats[$source->value]['today'] = $q->whereDate('released_at', today())->count();
             }
 
             return $stats;
