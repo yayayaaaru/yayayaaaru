@@ -10,6 +10,7 @@ use Artesaos\SEOTools\Facades\JsonLd;
 use Artesaos\SEOTools\Facades\OpenGraph;
 use Artesaos\SEOTools\Facades\SEOMeta;
 use Artesaos\SEOTools\Facades\TwitterCard;
+use http\Exception\InvalidArgumentException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -49,7 +50,7 @@ class DeveloperController extends Controller
                 'title' => 'Удалено',
                 'count' => Developer::whereNotNull('removed_at')->count(),
                 'today' => Developer::whereDate('removed_at', today())->count(),
-                'search' => '/developers/search?is_removed=true',
+                'search' => route('developers.search', ['removed' => 'true']),
             ];
 
             return [
@@ -76,6 +77,28 @@ class DeveloperController extends Controller
         SEOMeta::setTitle(sprintf('%s — новые за сегодня, Разработчики', $source->name), false)->setDescription('Свежие студии, которые только что добавили свои игры на платформу.');
 
         return view('web.developers.latest', compact('source', 'developers'));
+    }
+
+    public function search(Request $request)
+    {
+        $q = Developer::query();
+
+        $map = ['removed' => 'removed_at'];
+
+        foreach ($request->only(['removed']) as $param => $value) {
+
+            $q = match ($field = $map[$param]) {
+                'removed_at' => $value === 'true' ? $q->whereNotNull($field) : $q->whereNull($field),
+                default => throw new InvalidArgumentException(),
+            };
+        }
+
+        $q->orderByDesc('created_at');
+        $q->orderByDesc('id');
+
+        $developers = $q->paginate(30);
+
+        return view('web.developers.search', compact('developers'));
     }
 
     public function games(Developer $developer)

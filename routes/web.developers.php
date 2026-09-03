@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'developers', 'as' => 'developers'], function () {
     Route::get('/', [DeveloperController::class, 'showcase'])->name('.showcase');
+    Route::get('/search', [DeveloperController::class, 'search'])->name('.search');
     Route::group(['prefix' => '{source}'], function () {
         Route::get('/', [DeveloperController::class, 'index']);
         Route::get('/latest', [DeveloperController::class, 'latest'])->name('.latest');
