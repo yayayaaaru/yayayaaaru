@@ -11,6 +11,7 @@ use Artesaos\SEOTools\Facades\JsonLd;
 use Artesaos\SEOTools\Facades\OpenGraph;
 use Artesaos\SEOTools\Facades\SEOMeta;
 use Artesaos\SEOTools\Facades\TwitterCard;
+use http\Exception\InvalidArgumentException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -50,28 +51,28 @@ class GameController extends Controller
                 'title' => 'Всего приложений',
                 'count' => Game::count(),
                 'today' => Game::whereDate('released_at', today())->count(),
-                'search' => '/games/search',
+                'search' => route('games.search'),
             ];
 
             $green = [
                 'title' => 'Опубликовано',
                 'count' => Game::whereNull('removed_at')->count(),
                 'today' => Game::whereNull('removed_at')->whereDate('released_at', today())->count(),
-                'search' => '/games/search?is_removed=false',
+                'search' => route('games.search', ['removed' => 'false']),
             ];
 
             $yellow = [
                 'title' => 'В новинках',
                 'count' => Game::whereJsonContains('category_ids', [12])->count(),
                 'today' => Game::whereJsonContains('category_ids', [12])->whereDate('released_at', today())->count(),
-                'search' => '/games/search?category_ids=12'
+                'search' => route('games.search', ['category' => '12']),
             ];
 
             $red = [
                 'title' => 'Удалено',
                 'count' => Game::whereNotNull('removed_at')->count(),
                 'today' => Game::whereNotNull('removed_at')->whereDate('removed_at', today())->count(),
-                'search' => '/games/search?is_removed=true',
+                'search' => route('games.search', ['removed' => 'true']),
             ];
 
             return [
@@ -103,6 +104,29 @@ class GameController extends Controller
         SEOMeta::setTitle(sprintf('%s — новые за сегодня, Игры', $source->name), false)->setDescription('Свежие релизы сегодняшнего дня — играйте в новинки прямо сейчас.');
 
         return view('web.games.latest', compact('source', 'games'));
+    }
+
+    public function search(Request $request)
+    {
+        $q = Game::query();
+
+        $map = ['removed' => 'removed_at', 'category' => 'category_ids'];
+
+        foreach ($request->only(['removed', 'category']) as $param => $value) {
+
+            $q = match ($field = $map[$param]) {
+                'removed_at' => $value === 'true' ? $q->whereNotNull($field) : $q->whereNull($field),
+                'category_ids' => $q->whereJsonContains($field, array_map('intval', explode(',', $value))),
+                default => throw new InvalidArgumentException(),
+            };
+        }
+
+        $q->orderByDesc('released_at');
+        $q->orderByDesc('id');
+
+        $games = $q->paginate(30);
+
+        return view('web.games.search', compact('games'));
     }
 
     /**
