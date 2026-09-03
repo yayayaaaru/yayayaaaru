@@ -139,6 +139,7 @@ class GameController extends Controller
         $games = $q
             ->whereNotNull('synced_at')
             ->whereHasSourceNamed($source)
+            ->withCount('views')
             ->orderByDesc('released_at')
             ->orderByDesc('id')
             ->paginate(30);

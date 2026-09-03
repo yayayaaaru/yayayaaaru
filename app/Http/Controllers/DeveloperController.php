@@ -122,6 +122,7 @@ class DeveloperController extends Controller
 
         $developers = $q
             ->whereHasSourceNamed($source)
+            ->withCount('views')
             ->orderByDesc('created_at')
             ->paginate(30);
 
