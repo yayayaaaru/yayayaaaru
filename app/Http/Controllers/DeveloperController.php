@@ -38,8 +38,19 @@ class DeveloperController extends Controller
 
         $stats = Cache::remember(cache_key('developers_showcase_all'), $ttl, function () {
 
-            $muted = ['title' => 'Всего разработчиков', 'count' => Developer::count()];
-            $red = ['title' => 'Удалено', 'count' => Developer::whereNotNull('removed_at')->count()];
+            $muted = [
+                'title' => 'Всего разработчиков',
+                'count' => Developer::count(),
+                'today' => Developer::whereDate('created_at', today())->count(),
+                'search' => '/developers/search',
+            ];
+
+            $red = [
+                'title' => 'Удалено',
+                'count' => Developer::whereNotNull('removed_at')->count(),
+                'today' => Developer::whereDate('removed_at', today())->count(),
+                'search' => '/developers/search?is_removed=true',
+            ];
 
             return [
                 'bg-muted-lt' => $muted,

@@ -65,7 +65,7 @@
             <div class="row">
                 @foreach($stats as $bg => $data)
                     <div class="col">
-                        <div class="card card-sm">
+                        <a href="{{ $data['search'] }}" class="card card card-link card-link-pop card-sm">
                             <div class="card-body">
                                 <div class="row align-items-center">
                                     <div class="col-auto">
@@ -92,6 +92,9 @@
                                     <div class="col">
                                         <div class="font-weight-medium">
                                             <b>{{ number_format($data['count'], 0, '', ' ') }}</b>
+                                            @if($data['today'])
+                                                <span class="text-success">+{{ $data['today'] }}</span>
+                                            @endif
                                         </div>
                                         <div class="text-secondary text-uppercase">
                                             {{ $data['title'] }}
@@ -99,7 +102,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 @endforeach
             </div>

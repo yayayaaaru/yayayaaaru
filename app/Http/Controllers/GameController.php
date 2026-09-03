@@ -46,10 +46,33 @@ class GameController extends Controller
 
         $stats = Cache::remember(cache_key('games_showcase_all'), $ttl, function () {
 
-            $muted = ['title' => 'Всего приложений', 'count' => Game::count()];
-            $green = ['title' => 'Опубликовано', 'count' => Game::whereNull('removed_at')->count()];
-            $yellow = ['title' => 'В новинках', 'count' => Game::whereJsonContains('category_ids', [12])->count()];
-            $red = ['title' => 'Удалено', 'count' => Game::whereNotNull('removed_at')->count()];
+            $muted = [
+                'title' => 'Всего приложений',
+                'count' => Game::count(),
+                'today' => Game::whereDate('released_at', today())->count(),
+                'search' => '/games/search',
+            ];
+
+            $green = [
+                'title' => 'Опубликовано',
+                'count' => Game::whereNull('removed_at')->count(),
+                'today' => Game::whereNull('removed_at')->whereDate('released_at', today())->count(),
+                'search' => '/games/search?is_removed=false',
+            ];
+
+            $yellow = [
+                'title' => 'В новинках',
+                'count' => Game::whereJsonContains('category_ids', [12])->count(),
+                'today' => Game::whereJsonContains('category_ids', [12])->whereDate('released_at', today())->count(),
+                'search' => '/games/search?category_ids=12'
+            ];
+
+            $red = [
+                'title' => 'Удалено',
+                'count' => Game::whereNotNull('removed_at')->count(),
+                'today' => Game::whereNotNull('removed_at')->whereDate('removed_at', today())->count(),
+                'search' => '/games/search?is_removed=true',
+            ];
 
             return [
                 'bg-muted-lt' => $muted,
