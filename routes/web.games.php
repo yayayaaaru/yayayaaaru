@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'games', 'as' => 'games'], function () {
     Route::get('/', [GameController::class, 'showcase'])->name('.showcase');
+    Route::get('/search', [GameController::class, 'search'])->name('.search');
     Route::group(['prefix' => '{source}'], function () {
         Route::get('/', [GameController::class, 'index']);
         Route::get('/latest', [GameController::class, 'latest'])->name('.latest');

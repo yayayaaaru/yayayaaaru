@@ -10,6 +10,7 @@ use Artesaos\SEOTools\Facades\JsonLd;
 use Artesaos\SEOTools\Facades\OpenGraph;
 use Artesaos\SEOTools\Facades\SEOMeta;
 use Artesaos\SEOTools\Facades\TwitterCard;
+use http\Exception\InvalidArgumentException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -20,8 +21,8 @@ class DeveloperController extends Controller
     {
         $ttl = now()->addHours(3);
 
-        /** @var array $stats */
-        $stats = Cache::remember(cache_key('developers_showcase'), $ttl, function () {
+        /** @var array $statsBySource */
+        $statsBySource = Cache::remember(cache_key('developers_showcase'), $ttl, function () {
 
             $stats = [];
 
@@ -36,9 +37,31 @@ class DeveloperController extends Controller
             return $stats;
         });
 
+        $stats = Cache::remember(cache_key('developers_showcase_all'), $ttl, function () {
+
+            $muted = [
+                'title' => 'Всего разработчиков',
+                'count' => Developer::count(),
+                'today' => Developer::whereDate('created_at', today())->count(),
+                'search' => '/developers/search',
+            ];
+
+            $red = [
+                'title' => 'Удалено',
+                'count' => Developer::whereNotNull('removed_at')->count(),
+                'today' => Developer::whereDate('removed_at', today())->count(),
+                'search' => route('developers.search', ['removed' => 'true']),
+            ];
+
+            return [
+                'bg-muted-lt' => $muted,
+                'bg-red-lt' => $red,
+            ];
+        });
+
         SEOMeta::setTitle('Разработчики — Витрина', false)->setDescription('Витрина');
 
-        return view('web.developers.showcase', compact('stats'));
+        return view('web.developers.showcase', compact('statsBySource', 'stats'));
     }
 
     public function latest(Source $source)
@@ -54,6 +77,28 @@ class DeveloperController extends Controller
         SEOMeta::setTitle(sprintf('%s — новые за сегодня, Разработчики', $source->name), false)->setDescription('Свежие студии, которые только что добавили свои игры на платформу.');
 
         return view('web.developers.latest', compact('source', 'developers'));
+    }
+
+    public function search(Request $request)
+    {
+        $q = Developer::query();
+
+        $map = ['removed' => 'removed_at'];
+
+        foreach ($request->only(['removed']) as $param => $value) {
+
+            $q = match ($field = $map[$param]) {
+                'removed_at' => $value === 'true' ? $q->whereNotNull($field) : $q->whereNull($field),
+                default => throw new InvalidArgumentException(),
+            };
+        }
+
+        $q->orderByDesc('created_at');
+        $q->orderByDesc('id');
+
+        $developers = $q->paginate(30);
+
+        return view('web.developers.search', compact('developers'));
     }
 
     public function games(Developer $developer)
@@ -77,6 +122,7 @@ class DeveloperController extends Controller
 
         $developers = $q
             ->whereHasSourceNamed($source)
+            ->withCount('views')
             ->orderByDesc('created_at')
             ->paginate(30);
 
